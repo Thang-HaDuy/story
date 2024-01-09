@@ -1,10 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using App.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+
+using App.Models;
+using App.Areas.Action.Models;
+using App.Areas.Management.Models;
 
 namespace App.Data
 {
@@ -15,18 +14,17 @@ namespace App.Data
         {
             
         }
-
-        public DbSet<Token> Tokens { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             base.OnConfiguring(builder);
         }
 
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-             foreach (var entityType in modelBuilder.Model.GetEntityTypes())
+            foreach (var entityType in modelBuilder.Model.GetEntityTypes())
             {
                 var tableName = entityType.GetTableName();
                 if (tableName.StartsWith("AspNet"))
@@ -34,7 +32,44 @@ namespace App.Data
                     entityType.SetTableName(tableName.Substring(6));
                 }
             }
+            
+            modelBuilder.Entity<CategoryStory>( entity => {
+                entity.HasKey( c => new {c.CategoryId, c.StoryId});
+            });  
+
+            modelBuilder.Entity<Follow>( entity => {
+                entity.HasKey( c => new {c.UserId, c.StoryId});
+            });
+              
+            modelBuilder.Entity<LikeComment>( entity => {
+                entity.HasKey( c => new {c.UserId, c.CommentId});
+
+                entity.HasOne(lc => lc.User)
+                    .WithMany(u => u.LikeComments)
+                    .HasForeignKey(lc => lc.UserId)
+                    .OnDelete(DeleteBehavior.NoAction);
+
+                entity.HasOne(lc => lc.Comment)
+                    .WithMany(c => c.Like)
+                    .HasForeignKey(lc => lc.CommentId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+                          
+            modelBuilder.Entity<Rating>( entity => {
+                entity.HasKey( c => new {c.UserId, c.StoryId});
+            });
         } 
+
+        
+        public DbSet<Token> Tokens { get; set; }
+        public DbSet<Category> Categories { get; set; }
+        public DbSet<Chapter> Chapters { get; set; }
+        public DbSet<Story> Stories { get; set; }
+        public DbSet<CategoryStory> CategoryStory { get; set; }
+        public DbSet<Comment> Comments { get; set; }
+        public DbSet<Follow> Follows { get; set; }
+        public DbSet<LikeComment> LikeComments { get; set; }
+        public DbSet<Rating> Ratings { get; set; }
 
     }
 }

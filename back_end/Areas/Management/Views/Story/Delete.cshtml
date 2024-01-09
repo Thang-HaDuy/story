@@ -1,0 +1,19 @@
+@model Story
+
+@{
+    ViewData["Title"] = "Xóa";
+}
+
+<h3>
+    Bạn Có MUốn Xóa Truyện 
+    @Html.DisplayNameFor(model => model.Name) Không?
+</h3>
+<div>
+    <h4>Story</h4>
+    <hr />
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="Id" />
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>

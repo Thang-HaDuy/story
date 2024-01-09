@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using App.Models.ViewModels;
 
 namespace App.Services.AccountService
 {
@@ -157,7 +158,7 @@ namespace App.Services.AccountService
                 var token = await _context.Tokens.Include(u => u.User)
                     .FirstOrDefaultAsync(u => u.UserId == user.Id && u.TokenId == TokenId);
 
-                _context.Remove(token);
+                _context.Tokens.Remove(token);
                 await _context.SaveChangesAsync();
                 
                 return new ApiResponse()
