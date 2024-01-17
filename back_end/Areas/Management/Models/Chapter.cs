@@ -8,8 +8,10 @@ namespace App.Areas.Management.Models
     public class Chapter
     {
         [Key]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string? Id { get; set; }
         
+        [Required(ErrorMessage = "Phải nhập {0}")]
+        public string? Name { get; set; }
         [Required(ErrorMessage = "Phải nhập {0}")]
         public float Number { get; set; }
         

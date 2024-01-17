@@ -6,7 +6,7 @@ namespace App.Areas.Management.Models
     public class Category
     {
         [Key]
-        public string? Id { get; set; } = Guid.NewGuid().ToString();
+        public string? Id { get; set; }
         
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Column(TypeName = "nvarchar")]

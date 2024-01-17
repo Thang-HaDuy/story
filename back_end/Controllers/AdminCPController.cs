@@ -10,8 +10,6 @@ using Microsoft.Extensions.Logging;
 namespace App.Areas.Panel.Controllers
 {
     [Authorize]
-    [Area("Panel")]
-    [Route("[controller]/[action]")]
     public class AdminController : Controller
     {
         private readonly ILogger<AdminController> _logger;

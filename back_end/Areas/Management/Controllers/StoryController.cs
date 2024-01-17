@@ -6,6 +6,7 @@ using App.Areas.Management.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using App.Utilities;
+using Microsoft.EntityFrameworkCore.Update.Internal;
 
 namespace App.Areas.Management.Controllers
 {
@@ -29,10 +30,34 @@ namespace App.Areas.Management.Controllers
             var pageSize = 10;
             var model = await _context.Stories.ToPagedListAsync(pageNumber,pageSize);
 
-            ViewBag.postIndex = (pageNumber - 1) * pageSize;
+            ViewBag.storyIndex = (pageNumber - 1) * pageSize;
             return View(model);
         }
 
+        // GET: Blog/Post/Details/5
+        public async Task<IActionResult> Details(string? id)
+        {
+            if (id != null)
+            {
+                var Story = await _context.Stories
+                    .Include(s => s.Chapters)
+                    .Include(p => p.CategoryStorys)
+                    .ThenInclude(c => c.Category)
+                    .FirstOrDefaultAsync(m => m.Id == id);
+
+                if (Story != null)
+                {
+                    //load categories
+                    var listCategorys = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
+                    var Categorys = await _context.Categories.Where(s => listCategorys.Contains(s.Id)).Select(c => c.Name).ToListAsync();
+                    ViewData["categories"] = Categorys;
+                    return View(Story);
+                }
+                return NotFound();
+            }
+            return NotFound();
+
+        }
         //  GET: Story/Create
         public async Task<IActionResult> Create()
         {
@@ -55,6 +80,7 @@ namespace App.Areas.Management.Controllers
 
             if (ModelState.IsValid)
             {
+                model.Id = Guid.NewGuid().ToString();
                 model.CreatedAt = DateTime.UtcNow;
                 model.UpdatedAt = DateTime.UtcNow;
                 if (model.FileUpload != null) model.FileName = await UploadImage.UploadImageAsync("Story", model.FileUpload);
@@ -90,8 +116,8 @@ namespace App.Areas.Management.Controllers
 
             //load categories
             var categories = await _context.Categories.ToListAsync();
-            var listCategory = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
-            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategory);
+            var listCategorys = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
+            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategorys);
 
             var story = await _context.Stories.FindAsync(id);
             if (story == null)
@@ -116,15 +142,81 @@ namespace App.Areas.Management.Controllers
                     return NotFound();
                 }
 
-                if (model.FileUpload != null) model.FileName = await UploadImage.UploadImageAsync("Story", model.FileUpload);
+                //remove CategoryStory old
+                var listCategorys = await _context.CategoryStory.Where(c => c.StoryId == id).ToListAsync();
+                _context.CategoryStory.RemoveRange(listCategorys);
                 
-                _context.Update(story);
+                //Add CategoryStory new
+                if (model.CategoryIDs != null)
+                {
+                    foreach (var CateId in model.CategoryIDs)
+                    {
+                        _context.Add(new CategoryStory()
+                        {
+                            CategoryId = CateId,
+                            StoryId = id
+                        });
+                    }
+                }
+
+                // Update image if changed
+                if (model.FileUpload != null) story.FileName = await UploadImage.UploadImageAsync("Story", model.FileUpload);
+
+                story.Author = model.Author;
+                story.Name = model.Name;
+                story.Description = model.Description;
+                story.Status = model.Status;
+                story.UpdatedAt = DateTime.UtcNow;
+                story.DeletedAt = model.DeletedAt;
+
+                _context.Stories.Update(story);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            
+            //load categories
+            var categories = await _context.Categories.ToListAsync();
+            var listCategoryActive = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
+            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategoryActive);
+
             return View(model);
         }
 
+        // GET: Story/Delete/5
+        public async Task<IActionResult> Delete(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var story = await _context.Stories.FirstOrDefaultAsync(c => c.Id == id);
+            if (story != null)
+            {
+                story.DeletedAt = DateTime.UtcNow;
+                _context.Update(story);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        // GET: Story/Delete/5
+        public async Task<IActionResult> Restore(string id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var story = await _context.Stories.FirstOrDefaultAsync(c => c.Id == id);
+            if (story != null)
+            {
+                story.DeletedAt = null;
+                _context.Update(story);
+                await _context.SaveChangesAsync();
+            }
+            return RedirectToAction(nameof(Index));
+        }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()

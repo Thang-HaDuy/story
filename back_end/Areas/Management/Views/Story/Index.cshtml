@@ -30,7 +30,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @(++ViewBag.postIndex)
+                @(++ViewBag.storyIndex)
             </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.Id">
@@ -48,7 +48,9 @@
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                <a asp-action="@(item.DeletedAt == null ? "Delete" : "Restore")" asp-route-id="@item.Id">
+                    @(item.DeletedAt == null ? "Delete" : "Restore")
+                </a>
             </td>
         </tr>
 }

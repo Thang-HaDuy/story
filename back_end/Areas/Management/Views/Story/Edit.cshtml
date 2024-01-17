@@ -7,8 +7,9 @@
 
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Edit">
+        <form asp-action="Edit" enctype="multipart/form-data">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
              <div class="form-group">
                 <label asp-for="CategoryIDs" class="control-label"></label>
                 <select asp-for="CategoryIDs" multiple="multiple" asp-items="list" class="w-100"></select>
@@ -31,7 +32,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="FileName" class="control-label"></label>
-                <img src="\@Url.Content(Model.FileName)" alt="Ảnh truyện" />
+                <img src="\@Url.Content(Model.FileName)" alt="Ảnh truyện" class = "col-sm-10" />
             </div>
             <div class="form-group">
                 <label asp-for="FileUpload"></label>

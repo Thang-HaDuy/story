@@ -24,7 +24,7 @@ namespace App.Areas.Management.Controllers
             var pageNumber = page ?? 1;
             var pageSize = 10;
             var model = await _context.Categories.ToPagedListAsync(pageNumber,pageSize);
-            ViewBag.postIndex = (pageNumber - 1) * pageSize;
+            ViewBag.cateIndex = (pageNumber - 1) * pageSize;
             return View(model);
         }
 
@@ -96,13 +96,13 @@ namespace App.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var story = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
-            if (story == null)
+            var cate = await _context.Categories.FirstOrDefaultAsync(c => c.Id == id);
+            if (cate == null)
             {
                 return NotFound();
             }
 
-            return View(story);
+            return View(cate);
         }
 
         // POST: Story/Delete/5
