@@ -33,12 +33,12 @@ namespace App.Data
                 }
             }
             
-            modelBuilder.Entity<CategoryStory>( entity => {
-                entity.HasKey( c => new {c.CategoryId, c.StoryId});
+            modelBuilder.Entity<CategoryMovie>( entity => {
+                entity.HasKey( c => new {c.CategoryId, c.MovieId});
             });  
 
             modelBuilder.Entity<Follow>( entity => {
-                entity.HasKey( c => new {c.UserId, c.StoryId});
+                entity.HasKey( c => new {c.UserId, c.MovieId});
             });
               
             modelBuilder.Entity<LikeComment>( entity => {
@@ -56,16 +56,16 @@ namespace App.Data
             });
                           
             modelBuilder.Entity<Rating>( entity => {
-                entity.HasKey( c => new {c.UserId, c.StoryId});
+                entity.HasKey( c => new {c.UserId, c.MovieId});
             });
         } 
 
         
         public DbSet<Token> Tokens { get; set; }
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Chapter> Chapters { get; set; }
-        public DbSet<Story> Stories { get; set; }
-        public DbSet<CategoryStory> CategoryStory { get; set; }
+        public DbSet<Episode> episodes { get; set; }
+        public DbSet<Movie> movies { get; set; }
+        public DbSet<CategoryMovie> CategoryMovie { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<LikeComment> LikeComments { get; set; }

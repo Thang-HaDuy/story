@@ -1,4 +1,4 @@
-@model IPagedList<Story>
+@model IPagedList<Movie>
 
 @{
     ViewData["Title"] = "Danh Sách Truyện";
@@ -30,7 +30,7 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                @(++ViewBag.storyIndex)
+                @(++ViewBag.movieIndex)
             </td>
             <td>
                 <a asp-action="Details" asp-route-id="@item.Id">
@@ -60,7 +60,7 @@
 
 @Html.PagedListPager( Model, page => Url.Action("Index", new { page = page }))
 @{
-    _AdminSidebarService.SetActive("Story", "Index", "Management");
+    _AdminSidebarService.SetActive("Movie", "Index", "Management");
 }
 @section Sidebar
 {

@@ -1,4 +1,4 @@
-@model Story
+@model Movie
 
 @{
     ViewData["Title"] = "Thêm Truyện mới";
@@ -62,5 +62,13 @@
         });
     </script>
 
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+@{
+    _AdminSidebarService.SetActive("Movie", "Index", "Management");
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+@section Sidebar
+{
+    @Html.Raw(_AdminSidebarService.renderHtml())
 }

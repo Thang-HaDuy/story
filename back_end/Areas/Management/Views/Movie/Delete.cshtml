@@ -1,4 +1,4 @@
-@model Story
+@model Movie
 
 @{
     ViewData["Title"] = "Xóa";
@@ -9,7 +9,6 @@
     @Html.DisplayNameFor(model => model.Name) Không?
 </h3>
 <div>
-    <h4>Story</h4>
     <hr />
     <form asp-action="Delete">
         <input type="hidden" asp-for="Id" />
@@ -17,3 +16,10 @@
         <a asp-action="Index">Back to List</a>
     </form>
 </div>
+@{
+    _AdminSidebarService.SetActive("Movie", "Index", "Management");
+}
+@section Sidebar
+{
+    @Html.Raw(_AdminSidebarService.renderHtml())
+}

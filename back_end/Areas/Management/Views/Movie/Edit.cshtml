@@ -1,4 +1,4 @@
-@model Story
+@model Movie
 
 @{
     ViewData["Title"] = "Chỉnh Sửa";
@@ -54,7 +54,14 @@
 <div>
     <a asp-action="Index">Back to List</a>
 </div>
-
+@{
+    _AdminSidebarService.SetActive("Movie", "Index", "Management");
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
+}
+@section Sidebar
+{
+    @Html.Raw(_AdminSidebarService.renderHtml())
+}
 @section Scripts {
     <script src="~/lib/multiple-select/multiple-select.min.js"></script>
     <link rel="stylesheet" href="~/lib/multiple-select/multiple-select.min.css" />
@@ -67,5 +74,4 @@
         });
     </script>
     
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }

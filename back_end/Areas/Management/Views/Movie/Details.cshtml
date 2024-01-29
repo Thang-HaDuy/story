@@ -1,4 +1,4 @@
-@model Story
+@model Movie
 
 @{
     ViewData["Title"] = "Chi Tiết";
@@ -18,7 +18,7 @@
         <dd class = "col-sm-10">
             @for (var i = 0; i < categories.Count(); i++)
             {
-                <span>@(categories[i])@(i > 1 ? "," : "") </span>
+                <span>@(categories[i])@(i < categories.Count()-1 ? "," : "") </span>
             }
         </dd>
         <dt class = "col-sm-2">
@@ -63,7 +63,7 @@
         <dd class = "col-sm-10">
             @Html.DisplayFor(model => model.DeletedAt)
         </dd>
-        <dt class = "col-sm-2">Chapter</dt>
+        <dt class = "col-sm-2">Episode</dt>
         <table class="table fixed-size">
             <thead>
                 <tr>
@@ -72,12 +72,12 @@
                 </tr>
             </thead>
             <tbody>
-                @foreach (var Chapter in Model.Chapters) {
+                @foreach (var Episode in Model.Episodes) {
                     <tr>
                         <td>
-                            <a class="col-sm-5" asp-controller="Chapter" asp-action="Details" asp-route-id="@Chapter.Id">@Chapter.Name</a>
+                            <a class="col-sm-5" asp-controller="Episode" asp-action="Details" asp-route-id="@Episode.Id">@Episode.Name</a>
                         </td>
-                        <td>Chương @Chapter.Number</td>
+                        <td>Chương @Episode.Number</td>
                     </tr>
                 }
             </tbody>
@@ -88,3 +88,10 @@
     <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
     <a asp-action="Index">Back to List</a>
 </div>
+@{
+    _AdminSidebarService.SetActive("Movie", "Index", "Management");
+}
+@section Sidebar
+{
+    @Html.Raw(_AdminSidebarService.renderHtml())
+}

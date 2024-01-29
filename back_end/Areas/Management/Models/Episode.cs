@@ -5,7 +5,7 @@ using App.Areas.Action.Models;
 
 namespace App.Areas.Management.Models
 {
-    public class Chapter
+    public class Episode
     {
         [Key]
         public string? Id { get; set; }
@@ -15,13 +15,19 @@ namespace App.Areas.Management.Models
         [Required(ErrorMessage = "Phải nhập {0}")]
         public float Number { get; set; }
         
-        [Required(ErrorMessage = "Phải nhập {0}")]
-        [Column(TypeName = "nvarchar(max)")]
-        public string Content { get; set; }
-        public string StoryId { get; set; }
 
-        [ForeignKey("StoryId")]
-        public Story Story { get; set; }
+        [Display(Name = "Video")]
+        public string? FileName { get; set; }
+        
+        [NotMapped]
+        [DataType(DataType.Upload)]
+        // [FileExtensions(Extensions = "png,jpg,jpeg,gif")]
+        [Display(Name = "Chọn file upload")]
+        public IFormFile? FileUpload { get; set; }
+        public string MovieId { get; set; }
+
+        [ForeignKey("MovieId")]
+        public Movie Movie { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime DeletedAt { get; set; }

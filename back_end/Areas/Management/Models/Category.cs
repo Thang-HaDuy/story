@@ -13,6 +13,6 @@ namespace App.Areas.Management.Models
         [StringLength(100)]
         public string Name { get; set; }
 
-        public ICollection<CategoryStory>? CategoryStory { get; set; }
+        public ICollection<CategoryMovie>? CategoryMovie { get; set; }
     }
 }

@@ -27,19 +27,19 @@ namespace back_end.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ChapterId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("ParentId")
+                    b.Property<string>("EpisodeId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("StoryId")
+                    b.Property<string>("MovieId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("ParentId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<DateTime>("UpdatedAt")
@@ -55,11 +55,11 @@ namespace back_end.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ChapterId");
+                    b.HasIndex("EpisodeId");
+
+                    b.HasIndex("MovieId");
 
                     b.HasIndex("ParentId");
-
-                    b.HasIndex("StoryId");
 
                     b.HasIndex("UserId");
 
@@ -71,12 +71,12 @@ namespace back_end.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("StoryId")
+                    b.Property<string>("MovieId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("UserId", "StoryId");
+                    b.HasKey("UserId", "MovieId");
 
-                    b.HasIndex("StoryId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Follows");
                 });
@@ -89,14 +89,14 @@ namespace back_end.Migrations
                     b.Property<string>("CommentId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("ChapterId")
+                    b.Property<string>("EpisodeId")
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("UserId", "CommentId");
 
-                    b.HasIndex("ChapterId");
-
                     b.HasIndex("CommentId");
+
+                    b.HasIndex("EpisodeId");
 
                     b.ToTable("LikeComments");
                 });
@@ -106,15 +106,15 @@ namespace back_end.Migrations
                     b.Property<string>("UserId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("StoryId")
+                    b.Property<string>("MovieId")
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<float>("Rate")
                         .HasColumnType("real");
 
-                    b.HasKey("UserId", "StoryId");
+                    b.HasKey("UserId", "MovieId");
 
-                    b.HasIndex("StoryId");
+                    b.HasIndex("MovieId");
 
                     b.ToTable("Ratings");
                 });
@@ -134,29 +134,25 @@ namespace back_end.Migrations
                     b.ToTable("Categories");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.CategoryStory", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.CategoryMovie", b =>
                 {
                     b.Property<string>("CategoryId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("StoryId")
+                    b.Property<string>("MovieId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.HasKey("CategoryId", "StoryId");
+                    b.HasKey("CategoryId", "MovieId");
 
-                    b.HasIndex("StoryId");
+                    b.HasIndex("MovieId");
 
-                    b.ToTable("CategoryStory");
+                    b.ToTable("CategoryMovie");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.Chapter", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.Episode", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -164,24 +160,31 @@ namespace back_end.Migrations
                     b.Property<DateTime>("DeletedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<float>("Number")
-                        .HasColumnType("real");
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("StoryId")
+                    b.Property<string>("MovieId")
                         .IsRequired()
                         .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<float>("Number")
+                        .HasColumnType("real");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("StoryId");
+                    b.HasIndex("MovieId");
 
-                    b.ToTable("Chapters");
+                    b.ToTable("episodes");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.Story", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.Movie", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -219,7 +222,7 @@ namespace back_end.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Stories");
+                    b.ToTable("movies");
                 });
 
             modelBuilder.Entity("App.Models.AppUser", b =>
@@ -449,17 +452,17 @@ namespace back_end.Migrations
 
             modelBuilder.Entity("App.Areas.Action.Models.Comment", b =>
                 {
-                    b.HasOne("App.Areas.Management.Models.Chapter", "chapter")
+                    b.HasOne("App.Areas.Management.Models.Episode", "episode")
                         .WithMany("Comments")
-                        .HasForeignKey("ChapterId");
+                        .HasForeignKey("EpisodeId");
+
+                    b.HasOne("App.Areas.Management.Models.Movie", null)
+                        .WithMany("Comments")
+                        .HasForeignKey("MovieId");
 
                     b.HasOne("App.Areas.Action.Models.Comment", "Parent")
                         .WithMany("Parents")
                         .HasForeignKey("ParentId");
-
-                    b.HasOne("App.Areas.Management.Models.Story", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("StoryId");
 
                     b.HasOne("App.Models.AppUser", "User")
                         .WithMany("Comments")
@@ -471,14 +474,14 @@ namespace back_end.Migrations
 
                     b.Navigation("User");
 
-                    b.Navigation("chapter");
+                    b.Navigation("episode");
                 });
 
             modelBuilder.Entity("App.Areas.Action.Models.Follow", b =>
                 {
-                    b.HasOne("App.Areas.Management.Models.Story", "Story")
+                    b.HasOne("App.Areas.Management.Models.Movie", "Movie")
                         .WithMany("Follows")
-                        .HasForeignKey("StoryId")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -488,22 +491,22 @@ namespace back_end.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Story");
+                    b.Navigation("Movie");
 
                     b.Navigation("User");
                 });
 
             modelBuilder.Entity("App.Areas.Action.Models.LikeComment", b =>
                 {
-                    b.HasOne("App.Areas.Management.Models.Chapter", null)
-                        .WithMany("LikeComments")
-                        .HasForeignKey("ChapterId");
-
                     b.HasOne("App.Areas.Action.Models.Comment", "Comment")
                         .WithMany("Like")
                         .HasForeignKey("CommentId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
+
+                    b.HasOne("App.Areas.Management.Models.Episode", null)
+                        .WithMany("LikeComments")
+                        .HasForeignKey("EpisodeId");
 
                     b.HasOne("App.Models.AppUser", "User")
                         .WithMany("LikeComments")
@@ -518,9 +521,9 @@ namespace back_end.Migrations
 
             modelBuilder.Entity("App.Areas.Action.Models.Rating", b =>
                 {
-                    b.HasOne("App.Areas.Management.Models.Story", "Story")
+                    b.HasOne("App.Areas.Management.Models.Movie", "Movie")
                         .WithMany("Ratings")
-                        .HasForeignKey("StoryId")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -530,39 +533,39 @@ namespace back_end.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Story");
+                    b.Navigation("Movie");
 
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.CategoryStory", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.CategoryMovie", b =>
                 {
                     b.HasOne("App.Areas.Management.Models.Category", "Category")
-                        .WithMany("CategoryStory")
+                        .WithMany("CategoryMovie")
                         .HasForeignKey("CategoryId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("App.Areas.Management.Models.Story", "Story")
-                        .WithMany("CategoryStorys")
-                        .HasForeignKey("StoryId")
+                    b.HasOne("App.Areas.Management.Models.Movie", "Movie")
+                        .WithMany("CategoryMovie")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Category");
 
-                    b.Navigation("Story");
+                    b.Navigation("Movie");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.Chapter", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.Episode", b =>
                 {
-                    b.HasOne("App.Areas.Management.Models.Story", "Story")
-                        .WithMany("Chapters")
-                        .HasForeignKey("StoryId")
+                    b.HasOne("App.Areas.Management.Models.Movie", "Movie")
+                        .WithMany("Episodes")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Story");
+                    b.Navigation("Movie");
                 });
 
             modelBuilder.Entity("App.Models.Token", b =>
@@ -634,23 +637,23 @@ namespace back_end.Migrations
 
             modelBuilder.Entity("App.Areas.Management.Models.Category", b =>
                 {
-                    b.Navigation("CategoryStory");
+                    b.Navigation("CategoryMovie");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.Chapter", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.Episode", b =>
                 {
                     b.Navigation("Comments");
 
                     b.Navigation("LikeComments");
                 });
 
-            modelBuilder.Entity("App.Areas.Management.Models.Story", b =>
+            modelBuilder.Entity("App.Areas.Management.Models.Movie", b =>
                 {
-                    b.Navigation("CategoryStorys");
-
-                    b.Navigation("Chapters");
+                    b.Navigation("CategoryMovie");
 
                     b.Navigation("Comments");
+
+                    b.Navigation("Episodes");
 
                     b.Navigation("Follows");
 

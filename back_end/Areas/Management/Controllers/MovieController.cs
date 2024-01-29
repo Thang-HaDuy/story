@@ -12,12 +12,12 @@ namespace App.Areas.Management.Controllers
 {
     [Area("Management")]
     [Route("[controller]/[action]")]
-    public class StoryController : Controller
+    public class MovieController : Controller
     {
         private readonly DataDbContext _context;
         private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public StoryController(DataDbContext context, IWebHostEnvironment webHostEnvironment)
+        public MovieController(DataDbContext context, IWebHostEnvironment webHostEnvironment)
         {
             _context = context;
             _webHostEnvironment = webHostEnvironment;
@@ -28,9 +28,9 @@ namespace App.Areas.Management.Controllers
         {
             var pageNumber = page ?? 1;
             var pageSize = 10;
-            var model = await _context.Stories.ToPagedListAsync(pageNumber,pageSize);
+            var model = await _context.movies.ToPagedListAsync(pageNumber,pageSize);
 
-            ViewBag.storyIndex = (pageNumber - 1) * pageSize;
+            ViewBag.movieIndex = (pageNumber - 1) * pageSize;
             return View(model);
         }
 
@@ -39,19 +39,19 @@ namespace App.Areas.Management.Controllers
         {
             if (id != null)
             {
-                var Story = await _context.Stories
-                    .Include(s => s.Chapters)
-                    .Include(p => p.CategoryStorys)
+                var movie = await _context.movies
+                    .Include(s => s.Episodes)
+                    .Include(p => p.CategoryMovie)
                     .ThenInclude(c => c.Category)
                     .FirstOrDefaultAsync(m => m.Id == id);
 
-                if (Story != null)
+                if (movie != null)
                 {
                     //load categories
-                    var listCategorys = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
+                    var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
                     var Categorys = await _context.Categories.Where(s => listCategorys.Contains(s.Id)).Select(c => c.Name).ToListAsync();
                     ViewData["categories"] = Categorys;
-                    return View(Story);
+                    return View(movie);
                 }
                 return NotFound();
             }
@@ -72,7 +72,7 @@ namespace App.Areas.Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Name,Description,Author,FileUpload,Status,CategoryIDs")] Story model)
+        public async Task<IActionResult> Create([Bind("Id,Name,Description,Author,FileUpload,Status,CategoryIDs")] Movie model)
         {
             //load categories
             var categories = await _context.Categories.ToListAsync();
@@ -83,7 +83,7 @@ namespace App.Areas.Management.Controllers
                 model.Id = Guid.NewGuid().ToString();
                 model.CreatedAt = DateTime.UtcNow;
                 model.UpdatedAt = DateTime.UtcNow;
-                if (model.FileUpload != null) model.FileName = await UploadImage.UploadImageAsync("Story", model.FileUpload);
+                if (model.FileUpload != null && model.FileUpload.Length > 0) model.FileName = await UploadImage.UploadImageAsync("Movie", model.FileUpload);
                 _context.Add(model);
 
                 //Add CategoryStory
@@ -91,10 +91,10 @@ namespace App.Areas.Management.Controllers
                 {
                     foreach (var CateId in model.CategoryIDs)
                     {
-                        _context.Add(new CategoryStory()
+                        _context.Add(new CategoryMovie()
                         {
                             CategoryId = CateId,
-                            Story = model
+                            Movie = model
                         });
                     }
                 }
@@ -116,15 +116,15 @@ namespace App.Areas.Management.Controllers
 
             //load categories
             var categories = await _context.Categories.ToListAsync();
-            var listCategorys = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
+            var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategorys);
 
-            var story = await _context.Stories.FindAsync(id);
-            if (story == null)
+            var movie = await _context.movies.FindAsync(id);
+            if (movie == null)
             {
                 return NotFound();
             }
-            return View(story);
+            return View(movie);
         }
 
         //  POST: Story/Edit/5
@@ -132,51 +132,51 @@ namespace App.Areas.Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Description,Author,Status,FileUpload,CategoryIDs")] Story model)
+        public async Task<IActionResult> Edit(string id, [Bind("Name,Description,Author,Status,FileUpload,CategoryIDs")] Movie model)
         {
             if (ModelState.IsValid)
             {
-                var story = _context.Stories.Find(id);
-                if (story == null)
+                var movie = _context.movies.Find(id);
+                if (movie == null)
                 {
                     return NotFound();
                 }
 
                 //remove CategoryStory old
-                var listCategorys = await _context.CategoryStory.Where(c => c.StoryId == id).ToListAsync();
-                _context.CategoryStory.RemoveRange(listCategorys);
+                var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).ToListAsync();
+                _context.CategoryMovie.RemoveRange(listCategorys);
                 
                 //Add CategoryStory new
                 if (model.CategoryIDs != null)
                 {
                     foreach (var CateId in model.CategoryIDs)
                     {
-                        _context.Add(new CategoryStory()
+                        _context.Add(new CategoryMovie()
                         {
                             CategoryId = CateId,
-                            StoryId = id
+                            MovieId = id
                         });
                     }
                 }
 
                 // Update image if changed
-                if (model.FileUpload != null) story.FileName = await UploadImage.UploadImageAsync("Story", model.FileUpload);
+                if (model.FileUpload != null && model.FileUpload.Length > 0) movie.FileName = await UploadImage.UploadImageAsync("movie", model.FileUpload);
 
-                story.Author = model.Author;
-                story.Name = model.Name;
-                story.Description = model.Description;
-                story.Status = model.Status;
-                story.UpdatedAt = DateTime.UtcNow;
-                story.DeletedAt = model.DeletedAt;
+                movie.Author = model.Author;
+                movie.Name = model.Name;
+                movie.Description = model.Description;
+                movie.Status = model.Status;
+                movie.UpdatedAt = DateTime.UtcNow;
+                movie.DeletedAt = model.DeletedAt;
 
-                _context.Stories.Update(story);
+                _context.movies.Update(movie);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             
             //load categories
             var categories = await _context.Categories.ToListAsync();
-            var listCategoryActive = await _context.CategoryStory.Where(c => c.StoryId == id).Select(c => c.CategoryId).ToListAsync();
+            var listCategoryActive = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategoryActive);
 
             return View(model);
@@ -190,11 +190,11 @@ namespace App.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var story = await _context.Stories.FirstOrDefaultAsync(c => c.Id == id);
-            if (story != null)
+            var movie = await _context.movies.FirstOrDefaultAsync(c => c.Id == id);
+            if (movie != null)
             {
-                story.DeletedAt = DateTime.UtcNow;
-                _context.Update(story);
+                movie.DeletedAt = DateTime.UtcNow;
+                _context.Update(movie);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));
@@ -208,11 +208,11 @@ namespace App.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var story = await _context.Stories.FirstOrDefaultAsync(c => c.Id == id);
-            if (story != null)
+            var movie = await _context.movies.FirstOrDefaultAsync(c => c.Id == id);
+            if (movie != null)
             {
-                story.DeletedAt = null;
-                _context.Update(story);
+                movie.DeletedAt = null;
+                _context.Update(movie);
                 await _context.SaveChangesAsync();
             }
             return RedirectToAction(nameof(Index));

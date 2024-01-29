@@ -43,6 +43,7 @@ namespace App.Areas.Management.Controllers
         {
             if (ModelState.IsValid)
             {
+                model.Id = Guid.NewGuid().ToString();
                 _context.Add(model);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));

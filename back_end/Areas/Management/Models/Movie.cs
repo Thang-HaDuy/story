@@ -8,10 +8,10 @@ using App.Areas.Action.Models;
 
 namespace App.Areas.Management.Models
 {
-    public class Story
+    public class Movie
     {
         [Key]
-        public string Id { get; set; }
+        public string? Id { get; set; }
         
         [Display(Name = "Tên Truyện")]
         [Required(ErrorMessage = "Phải nhập {0}")]
@@ -51,8 +51,8 @@ namespace App.Areas.Management.Models
         [NotMapped]
         [Display(Name = "Chuyên mục")]
         public string[]? CategoryIDs { get; set; }
-        public ICollection<CategoryStory>? CategoryStorys { get; set; }
-        public ICollection<Chapter>? Chapters { get; set; }
+        public ICollection<CategoryMovie>? CategoryMovie { get; set; }
+        public ICollection<Episode>? Episodes { get; set; }
         public ICollection<Comment>? Comments { get; set; }
         public ICollection<Follow>? Follows { get; set; }
         public ICollection<Rating>? Ratings { get; set; }

@@ -110,7 +110,7 @@ namespace App.Areas.Panel.Menu
                     Type = SidebarItemType.NavItem,
                     Title = "Quản lý Truyện",
                     AwesomeIcon = "far fa-folder",
-                    collapseID = "story",
+                    collapseID = "movie",
                     Items = new List<SidebarItem>() {
                         new SidebarItem() { 
                             Type = SidebarItemType.NavItem,
@@ -121,7 +121,7 @@ namespace App.Areas.Panel.Menu
                         },  
                         new SidebarItem() { 
                             Type = SidebarItemType.NavItem,
-                            Controller = "Story",
+                            Controller = "Movie",
                             Action = "Index", 
                             Area = "Management",
                             Title = "Danh Sách Truyện"                        
