@@ -124,8 +124,8 @@ namespace App.Areas.Panel.Menu
                             Controller = "Movie",
                             Action = "Index", 
                             Area = "Management",
-                            Title = "Danh Sách Truyện"                        
-                        },                                 
+                            Title = "Danh Sách Phim"                        
+                        },
                     },
                 });
 

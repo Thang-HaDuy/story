@@ -83,7 +83,7 @@ namespace App.Areas.Management.Controllers
                 model.Id = Guid.NewGuid().ToString();
                 model.CreatedAt = DateTime.UtcNow;
                 model.UpdatedAt = DateTime.UtcNow;
-                if (model.FileUpload != null && model.FileUpload.Length > 0) model.FileName = await UploadImage.UploadImageAsync("Movie", model.FileUpload);
+                if (model.FileUpload != null && model.FileUpload.Length > 0) model.FileName = await UploadImage.UploadImageAsync("Image", "Movie" , model.FileUpload);
                 _context.Add(model);
 
                 //Add CategoryStory
@@ -160,7 +160,7 @@ namespace App.Areas.Management.Controllers
                 }
 
                 // Update image if changed
-                if (model.FileUpload != null && model.FileUpload.Length > 0) movie.FileName = await UploadImage.UploadImageAsync("movie", model.FileUpload);
+                if (model.FileUpload != null && model.FileUpload.Length > 0) movie.FileName = await UploadImage.UploadImageAsync("Image", "movie", model.FileUpload);
 
                 movie.Author = model.Author;
                 movie.Name = model.Name;

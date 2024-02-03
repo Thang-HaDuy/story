@@ -7,7 +7,7 @@ namespace App.Utilities
 {
     public class UploadImage
     {
-        public static async Task<string> UploadImageAsync(string folderParent, IFormFile FileUpload)
+        public static async Task<string> UploadImageAsync(string TypeParent, string FolderParent, IFormFile FileUpload)
         {
             string year = DateTime.Now.Year.ToString();
             string month = DateTime.Now.Month.ToString();
@@ -15,7 +15,7 @@ namespace App.Utilities
 
             string nameFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + Path.GetExtension(FileUpload.FileName);
 
-            string pathFile = Path.Combine("Uploads", folderParent, year, month, day);
+            string pathFile = Path.Combine("Uploads", TypeParent, FolderParent, year, month, day);
             string linkFile = Path.Combine(pathFile, nameFile);
             string folderPath = Path.Combine("wwwroot", pathFile);
             string file = Path.Combine(folderPath, nameFile);
