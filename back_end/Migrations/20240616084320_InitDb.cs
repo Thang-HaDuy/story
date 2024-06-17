@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace back_end.Migrations
 {
     /// <inheritdoc />
-    public partial class init : Migration
+    public partial class InitDb : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -113,10 +113,10 @@ namespace back_end.Migrations
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Number = table.Column<float>(type: "real", nullable: false),
                     FileName = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    MovieId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    MovieId = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
@@ -125,8 +125,7 @@ namespace back_end.Migrations
                         name: "FK_episodes_movies_MovieId",
                         column: x => x.MovieId,
                         principalTable: "movies",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateTable(
@@ -200,7 +199,7 @@ namespace back_end.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Tokens",
+                name: "Token",
                 columns: table => new
                 {
                     TokenId = table.Column<string>(type: "nvarchar(450)", nullable: false),
@@ -212,9 +211,9 @@ namespace back_end.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Tokens", x => x.TokenId);
+                    table.PrimaryKey("PK_Token", x => x.TokenId);
                     table.ForeignKey(
-                        name: "FK_Tokens_Users_UserId",
+                        name: "FK_Token_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id");
@@ -306,80 +305,33 @@ namespace back_end.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Comments",
+                name: "View",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    EpisodeId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    ParentId = table.Column<string>(type: "nvarchar(450)", nullable: true),
-                    content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                    MovieId = table.Column<string>(type: "nvarchar(450)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Comments", x => x.Id);
+                    table.PrimaryKey("PK_View", x => new { x.UserId, x.MovieId });
                     table.ForeignKey(
-                        name: "FK_Comments_Comments_ParentId",
-                        column: x => x.ParentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_Comments_Users_UserId",
+                        name: "FK_View_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_Comments_episodes_EpisodeId",
-                        column: x => x.EpisodeId,
-                        principalTable: "episodes",
-                        principalColumn: "Id");
-                });
-
-            migrationBuilder.CreateTable(
-                name: "LikeComments",
-                columns: table => new
-                {
-                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    CommentId = table.Column<string>(type: "nvarchar(450)", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_LikeComments", x => new { x.UserId, x.CommentId });
-                    table.ForeignKey(
-                        name: "FK_LikeComments_Comments_CommentId",
-                        column: x => x.CommentId,
-                        principalTable: "Comments",
-                        principalColumn: "Id");
-                    table.ForeignKey(
-                        name: "FK_LikeComments_Users_UserId",
-                        column: x => x.UserId,
-                        principalTable: "Users",
-                        principalColumn: "Id");
+                        name: "FK_View_movies_MovieId",
+                        column: x => x.MovieId,
+                        principalTable: "movies",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateIndex(
                 name: "IX_CategoryMovie_MovieId",
                 table: "CategoryMovie",
                 column: "MovieId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_EpisodeId",
-                table: "Comments",
-                column: "EpisodeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_ParentId",
-                table: "Comments",
-                column: "ParentId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Comments_UserId",
-                table: "Comments",
-                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_episodes_MovieId",
@@ -390,11 +342,6 @@ namespace back_end.Migrations
                 name: "IX_Follows_MovieId",
                 table: "Follows",
                 column: "MovieId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_LikeComments_CommentId",
-                table: "LikeComments",
-                column: "CommentId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Ratings_MovieId",
@@ -414,8 +361,8 @@ namespace back_end.Migrations
                 filter: "[NormalizedName] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Tokens_UserId",
-                table: "Tokens",
+                name: "IX_Token_UserId",
+                table: "Token",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
@@ -444,6 +391,11 @@ namespace back_end.Migrations
                 column: "NormalizedUserName",
                 unique: true,
                 filter: "[NormalizedUserName] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_View_MovieId",
+                table: "View",
+                column: "MovieId");
         }
 
         /// <inheritdoc />
@@ -453,10 +405,10 @@ namespace back_end.Migrations
                 name: "CategoryMovie");
 
             migrationBuilder.DropTable(
-                name: "Follows");
+                name: "episodes");
 
             migrationBuilder.DropTable(
-                name: "LikeComments");
+                name: "Follows");
 
             migrationBuilder.DropTable(
                 name: "Ratings");
@@ -465,7 +417,7 @@ namespace back_end.Migrations
                 name: "RoleClaims");
 
             migrationBuilder.DropTable(
-                name: "Tokens");
+                name: "Token");
 
             migrationBuilder.DropTable(
                 name: "UserClaims");
@@ -480,19 +432,16 @@ namespace back_end.Migrations
                 name: "UserTokens");
 
             migrationBuilder.DropTable(
-                name: "Categories");
+                name: "View");
 
             migrationBuilder.DropTable(
-                name: "Comments");
+                name: "Categories");
 
             migrationBuilder.DropTable(
                 name: "Roles");
 
             migrationBuilder.DropTable(
                 name: "Users");
-
-            migrationBuilder.DropTable(
-                name: "episodes");
 
             migrationBuilder.DropTable(
                 name: "movies");

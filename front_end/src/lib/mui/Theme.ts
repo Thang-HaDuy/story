@@ -9,7 +9,45 @@ const theme = createTheme({
     palette: {
         mode: 'dark',
         primary: {
-            main: '#0f1416',
+            main: '#fff',
+        },
+        background: {
+            default: '#263238',
+            paper: '#0f1416',
+        },
+        text: {
+            primary: '#fff',
+            secondary: '#fff',
+        },
+    },
+    components: {
+        MuiButton: {
+            styleOverrides: {
+                root: {
+                    textTransform: 'none',
+                },
+            },
+        },
+        MuiOutlinedInput: {
+            styleOverrides: {
+                root: {
+                    '&.Mui-focused': {
+                        '& .MuiOutlinedInput-notchedOutline': {
+                            borderWidth: '1px',
+                        },
+                    },
+                },
+            },
+        },
+    },
+
+    breakpoints: {
+        values: {
+            xs: 0,
+            sm: 600,
+            md: 990,
+            lg: 1200,
+            xl: 1536,
         },
     },
 });

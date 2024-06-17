@@ -1,16 +1,16 @@
-// 'use client';
-// import React from 'react';
+'use client';
+import React from 'react';
 
-// const useDebounce = (value, delay) => {
-//     const [debouncedValue, setDebouncedValue] = React.useState(value);
+const useDebounce = (value: string, delay: number) => {
+    const [debouncedValue, setDebouncedValue] = React.useState(value);
 
-//     React.useEffect(() => {
-//         const handler = setTimeout(() => setDebouncedValue(value), delay);
+    React.useEffect(() => {
+        const handler = setTimeout(() => setDebouncedValue(value), delay);
 
-//         return () => clearTimeout(handler);
-//     }, [value]);
+        return () => clearTimeout(handler);
+    }, [value]);
 
-//     return debouncedValue.trim();
-// };
+    return debouncedValue.trim();
+};
 
-// export default useDebounce;
+export default useDebounce;

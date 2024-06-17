@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace back_end.Migrations
 {
     [DbContext(typeof(DataDbContext))]
-    [Migration("20240203104630_UpdateModelEpisode")]
-    partial class UpdateModelEpisode
+    [Migration("20240616084320_InitDb")]
+    partial class InitDb
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,50 +24,6 @@ namespace back_end.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("App.Areas.Action.Models.Comment", b =>
-                {
-                    b.Property<string>("Id")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<DateTime>("DeletedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("EpisodeId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("MovieId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("ParentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<DateTime>("UpdatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EpisodeId");
-
-                    b.HasIndex("MovieId");
-
-                    b.HasIndex("ParentId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Comments");
-                });
 
             modelBuilder.Entity("App.Areas.Action.Models.Follow", b =>
                 {
@@ -82,26 +38,6 @@ namespace back_end.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Follows");
-                });
-
-            modelBuilder.Entity("App.Areas.Action.Models.LikeComment", b =>
-                {
-                    b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("CommentId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("EpisodeId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("UserId", "CommentId");
-
-                    b.HasIndex("CommentId");
-
-                    b.HasIndex("EpisodeId");
-
-                    b.ToTable("LikeComments");
                 });
 
             modelBuilder.Entity("App.Areas.Action.Models.Rating", b =>
@@ -120,6 +56,21 @@ namespace back_end.Migrations
                     b.HasIndex("MovieId");
 
                     b.ToTable("Ratings");
+                });
+
+            modelBuilder.Entity("App.Areas.Action.Models.View", b =>
+                {
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("MovieId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("UserId", "MovieId");
+
+                    b.HasIndex("MovieId");
+
+                    b.ToTable("View");
                 });
 
             modelBuilder.Entity("App.Areas.Management.Models.Category", b =>
@@ -316,7 +267,7 @@ namespace back_end.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Tokens");
+                    b.ToTable("Token");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -452,33 +403,6 @@ namespace back_end.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("App.Areas.Action.Models.Comment", b =>
-                {
-                    b.HasOne("App.Areas.Management.Models.Episode", "episode")
-                        .WithMany("Comments")
-                        .HasForeignKey("EpisodeId");
-
-                    b.HasOne("App.Areas.Management.Models.Movie", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("MovieId");
-
-                    b.HasOne("App.Areas.Action.Models.Comment", "Parent")
-                        .WithMany("Parents")
-                        .HasForeignKey("ParentId");
-
-                    b.HasOne("App.Models.AppUser", "User")
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Parent");
-
-                    b.Navigation("User");
-
-                    b.Navigation("episode");
-                });
-
             modelBuilder.Entity("App.Areas.Action.Models.Follow", b =>
                 {
                     b.HasOne("App.Areas.Management.Models.Movie", "Movie")
@@ -498,29 +422,6 @@ namespace back_end.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("App.Areas.Action.Models.LikeComment", b =>
-                {
-                    b.HasOne("App.Areas.Action.Models.Comment", "Comment")
-                        .WithMany("Like")
-                        .HasForeignKey("CommentId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("App.Areas.Management.Models.Episode", null)
-                        .WithMany("LikeComments")
-                        .HasForeignKey("EpisodeId");
-
-                    b.HasOne("App.Models.AppUser", "User")
-                        .WithMany("LikeComments")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Comment");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("App.Areas.Action.Models.Rating", b =>
                 {
                     b.HasOne("App.Areas.Management.Models.Movie", "Movie")
@@ -531,6 +432,25 @@ namespace back_end.Migrations
 
                     b.HasOne("App.Models.AppUser", "User")
                         .WithMany("Ratings")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Movie");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("App.Areas.Action.Models.View", b =>
+                {
+                    b.HasOne("App.Areas.Management.Models.Movie", "Movie")
+                        .WithMany("views")
+                        .HasForeignKey("MovieId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("App.Models.AppUser", "User")
+                        .WithMany("Views")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -628,49 +548,33 @@ namespace back_end.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("App.Areas.Action.Models.Comment", b =>
-                {
-                    b.Navigation("Like");
-
-                    b.Navigation("Parents");
-                });
-
             modelBuilder.Entity("App.Areas.Management.Models.Category", b =>
                 {
                     b.Navigation("CategoryMovie");
-                });
-
-            modelBuilder.Entity("App.Areas.Management.Models.Episode", b =>
-                {
-                    b.Navigation("Comments");
-
-                    b.Navigation("LikeComments");
                 });
 
             modelBuilder.Entity("App.Areas.Management.Models.Movie", b =>
                 {
                     b.Navigation("CategoryMovie");
 
-                    b.Navigation("Comments");
-
                     b.Navigation("Episodes");
 
                     b.Navigation("Follows");
 
                     b.Navigation("Ratings");
+
+                    b.Navigation("views");
                 });
 
             modelBuilder.Entity("App.Models.AppUser", b =>
                 {
-                    b.Navigation("Comments");
-
                     b.Navigation("Follows");
-
-                    b.Navigation("LikeComments");
 
                     b.Navigation("Ratings");
 
                     b.Navigation("Tokens");
+
+                    b.Navigation("Views");
                 });
 #pragma warning restore 612, 618
         }

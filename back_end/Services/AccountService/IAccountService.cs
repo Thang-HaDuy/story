@@ -8,7 +8,7 @@ namespace App.Services.AccountService
     {
         public Task<IdentityResult> RegisterAsync(RegisterModel model);
         public Task<ApiResponse> LoginAsync(LoginModel model);
-        public Task<ApiResponse> RefreshAsync(TokenModel model);
-        public Task<ApiResponse> RevokeAsync(string username, string TokenId);
+        // public Task<ApiResponse> RefreshAsync(TokenModel model);
+        // public Task<ApiResponse> RevokeAsync(string username, string TokenId);
     }
 }

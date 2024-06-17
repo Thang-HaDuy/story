@@ -1,4 +1,5 @@
 using System.Reflection;
+using App.Areas.Management.Services.MovieServices;
 using App.Areas.Panel.Menu;
 using App.Data;
 using App.Models;
@@ -11,15 +12,16 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(options=>
+builder.Services.AddSwaggerGen(options =>
 {
-    var scheme = new OpenApiSecurityScheme 
+    var scheme = new OpenApiSecurityScheme
     {
         Reference = new OpenApiReference
         {
@@ -34,7 +36,7 @@ builder.Services.AddSwaggerGen(options=>
         Name = "Authorization",
         Type = SecuritySchemeType.ApiKey
     });
-    
+
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
     options.DocInclusionPredicate((docName, apiDesc) =>
     {
@@ -54,15 +56,25 @@ builder.Services.AddIdentity<AppUser, IdentityRole>()
         .AddEntityFrameworkStores<DataDbContext>()
         .AddDefaultTokenProviders();
 
-builder.Services.ConfigureApplicationCookie(options => {
+builder.Services.ConfigureApplicationCookie(options =>
+{
     options.LoginPath = "/Login/";
     options.LogoutPath = "/logout/";
     options.AccessDeniedPath = "/khongduoctruycap.html/";
 });
 builder.Services.AddScoped<IAccountService, AccountService>();
+builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<AdminSidebarService>();
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: MyAllowSpecificOrigins,
+                      policy =>
+                      {
+                          policy.WithOrigins(builder.Configuration["HostClient:frontend"]);
+                      });
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -83,8 +95,9 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+app.UseCors(MyAllowSpecificOrigins);
 
-app.UseAuthentication(); // xac dinh danh tinh 
+app.UseAuthentication(); // xac dinh danh tinh
 app.UseAuthorization();
 
 app.MapControllerRoute(

@@ -14,15 +14,15 @@ namespace App.Services.AccountService
 {
     public class AccountService : IAccountService
     {
-        
+
         private readonly UserManager<AppUser> _userManager;
         private readonly DataDbContext _context;
         private readonly IConfiguration _configuration;
 
         public AccountService
         (
-            UserManager<AppUser> userManager, 
-            IConfiguration configuration,  
+            UserManager<AppUser> userManager,
+            IConfiguration configuration,
             DataDbContext context
         )
         {
@@ -32,7 +32,7 @@ namespace App.Services.AccountService
         }
         public async Task<ApiResponse> LoginAsync(LoginModel model)
         {
-                
+
             var user = await _userManager.FindByEmailAsync(model.Email);
 
             if (user == null || !await _userManager.CheckPasswordAsync(user, model.Password))
@@ -64,7 +64,7 @@ namespace App.Services.AccountService
 
             await _context.AddAsync(tokenDB);
             await _context.SaveChangesAsync();
-            
+
             return new ApiResponse()
             {
                 Error = false,
@@ -80,7 +80,7 @@ namespace App.Services.AccountService
             };
         }
 
-        
+
         public async Task<IdentityResult> RegisterAsync(RegisterModel model)
         {
             var user = new AppUser
@@ -92,93 +92,93 @@ namespace App.Services.AccountService
             return await _userManager.CreateAsync(user, model.Password);
         }
 
-        public async Task<ApiResponse> RefreshAsync(TokenModel model)
-        {
-            var principal = GetPrincipalFromExpiredToken(model.AccessToken);
-            var emailClaim = principal?.FindFirst(ClaimTypes.Email)?.Value;
+        // public async Task<ApiResponse> RefreshAsync(TokenModel model)
+        // {
+        //     var principal = GetPrincipalFromExpiredToken(model.AccessToken);
+        //     var emailClaim = principal?.FindFirst(ClaimTypes.Email)?.Value;
 
-            if (emailClaim is null)
-                return new ApiResponse()
-                {
-                    Error = true,
-                    Message = "Invalid token",
-                    Success = false,
-                    Data = null
-                };
+        //     if (emailClaim is null)
+        //         return new ApiResponse()
+        //         {
+        //             Error = true,
+        //             Message = "Invalid token",
+        //             Success = false,
+        //             Data = null
+        //         };
 
-            var user = await _userManager.FindByEmailAsync(emailClaim);
-            var checkToken = await _context.Tokens.Include(u => u.User)
-                .FirstOrDefaultAsync(u => u.UserId == user.Id && u.AccessToken == model.AccessToken && u.RefreshToken == model.RefreshToken);
+        //     var user = await _userManager.FindByEmailAsync(emailClaim);
+        //     var checkToken = await _context.Tokens.Include(u => u.User)
+        //         .FirstOrDefaultAsync(u => u.UserId == user.Id && u.AccessToken == model.AccessToken && u.RefreshToken == model.RefreshToken);
 
-            if (checkToken is null || checkToken.ExpirationDate < DateTime.UtcNow)
-                return new ApiResponse()
-                {
-                    Error = true,
-                    Message = "Invalid token",
-                    Success = false,
-                    Data = null
-                };
+        //     if (checkToken is null || checkToken.ExpirationDate < DateTime.UtcNow)
+        //         return new ApiResponse()
+        //         {
+        //             Error = true,
+        //             Message = "Invalid token",
+        //             Success = false,
+        //             Data = null
+        //         };
 
-            var token = GenerateJwt(emailClaim);
-            var AccessToken = new JwtSecurityTokenHandler().WriteToken(token);
-            var RefreshToken = GenerateRefreshToken();
-            var ExpirationDate = DateTime.UtcNow.AddSeconds(30);
-            var TokenId = Guid.NewGuid().ToString();
+        //     var token = GenerateJwt(emailClaim);
+        //     var AccessToken = new JwtSecurityTokenHandler().WriteToken(token);
+        //     var RefreshToken = GenerateRefreshToken();
+        //     var ExpirationDate = DateTime.UtcNow.AddSeconds(30);
+        //     var TokenId = Guid.NewGuid().ToString();
 
-            checkToken.AccessToken = AccessToken;
-            checkToken.CreateAt = DateTime.UtcNow;
-            checkToken.ExpirationDate = ExpirationDate;
-            checkToken.RefreshToken = RefreshToken;
+        //     checkToken.AccessToken = AccessToken;
+        //     checkToken.CreateAt = DateTime.UtcNow;
+        //     checkToken.ExpirationDate = ExpirationDate;
+        //     checkToken.RefreshToken = RefreshToken;
 
-            _context.Update(checkToken);
-            await _context.SaveChangesAsync();
-            
-            return new ApiResponse()
-            {
-                Error = false,
-                Message = "Success refresh token",
-                Success = true,
-                Data = new TokenModel()
-                {
-                    AccessToken = AccessToken,
-                    RefreshToken = RefreshToken,
-                    ExpirationDate = ExpirationDate,
-                    TokenId = TokenId
+        //     _context.Update(checkToken);
+        //     await _context.SaveChangesAsync();
 
-                }
-            };
-        }
+        //     return new ApiResponse()
+        //     {
+        //         Error = false,
+        //         Message = "Success refresh token",
+        //         Success = true,
+        //         Data = new TokenModel()
+        //         {
+        //             AccessToken = AccessToken,
+        //             RefreshToken = RefreshToken,
+        //             ExpirationDate = ExpirationDate,
+        //             TokenId = TokenId
 
-        
-        public async Task<ApiResponse> RevokeAsync(string username, string TokenId)
-        {
-            var user = await _userManager.FindByNameAsync(username);
-            if (user != null && TokenId != null)
-            {
-                var token = await _context.Tokens.Include(u => u.User)
-                    .FirstOrDefaultAsync(u => u.UserId == user.Id && u.TokenId == TokenId);
+        //         }
+        //     };
+        // }
 
-                _context.Tokens.Remove(token);
-                await _context.SaveChangesAsync();
-                
-                return new ApiResponse()
-                {
-                    Error = false,
-                    Message = "Success refresh token",
-                    Success = true,
-                    Data = null
-                };
-                    
-            }
 
-            return new ApiResponse()
-            {
-                Error = true,
-                Message = "Success refresh token",
-                Success = false,
-                Data = null
-            };
-        }
+        // public async Task<ApiResponse> RevokeAsync(string username, string TokenId)
+        // {
+        //     var user = await _userManager.FindByNameAsync(username);
+        //     if (user != null && TokenId != null)
+        //     {
+        //         var token = await _context.Tokens.Include(u => u.User)
+        //             .FirstOrDefaultAsync(u => u.UserId == user.Id && u.TokenId == TokenId);
+
+        //         _context.Tokens.Remove(token);
+        //         await _context.SaveChangesAsync();
+
+        //         return new ApiResponse()
+        //         {
+        //             Error = false,
+        //             Message = "Success refresh token",
+        //             Success = true,
+        //             Data = null
+        //         };
+
+        //     }
+
+        //     return new ApiResponse()
+        //     {
+        //         Error = true,
+        //         Message = "Success refresh token",
+        //         Success = false,
+        //         Data = null
+        //     };
+        // }
 
         private JwtSecurityToken GenerateJwt(string Email)
         {
@@ -201,7 +201,7 @@ namespace App.Services.AccountService
             return token;
         }
 
-        
+
         private static string GenerateRefreshToken()
         {
             var randomNumber = new byte[64];
@@ -213,7 +213,7 @@ namespace App.Services.AccountService
             return Convert.ToBase64String(randomNumber);
         }
 
-        private ClaimsPrincipal? GetPrincipalFromExpiredToken (string token) 
+        private ClaimsPrincipal? GetPrincipalFromExpiredToken(string token)
         {
             var secret = _configuration["JWT:Secret"] ?? throw new InvalidOperationException("Secret not configured");
 

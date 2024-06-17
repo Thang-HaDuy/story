@@ -12,9 +12,13 @@ interface suggert {
 const Suggest: React.FC<suggert> = ({ suggestData }) => {
     return (
         <MenuItem sx={{ padding: '5px 10px', borderBottom: '1px solid #222e33' }}>
-            <Box component={Link} href={suggestData.href} sx={{ display: 'flex', textDecoration: 'none' }}>
+            <Box component={Link} href={'suggestData.href'} sx={{ display: 'flex', textDecoration: 'none' }}>
                 <Box sx={{ lineHeight: '0', width: '50px', height: '60px', marginTop: '2px' }}>
-                    <img style={{ width: '100%' }} src={suggestData.avatar} alt="My Image" />
+                    <img
+                        style={{ width: '100%' }}
+                        src={process.env.NEXT_PUBLIC_BASE_API + suggestData.fileName}
+                        alt="My Image"
+                    />
                 </Box>
                 <Box sx={{ textDecoration: 'none', width: '100%', paddingLeft: '10px' }}>
                     <Typography

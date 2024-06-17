@@ -88,31 +88,74 @@ const Footer = () => {
 
     return (
         <Box>
-            <Container sx={{ textAlign: 'center' }}>
+            <Container sx={{ textAlign: 'center', padding: { xs: '0', md: '24px' } }}>
                 <Box
                     sx={{
                         display: 'flex',
                         marginBottom: '20px',
                         alignItems: 'center',
-                        backgroundColor: '#0f1416',
+                        backgroundColor: 'background.paper',
                         padding: '0 20px',
+                        flexDirection: { xs: 'column', md: 'row' },
                         maxWidth: '1182px',
-                        height: '65px',
+                        height: { xs: 'auto', md: '65px' },
                     }}
                 >
-                    <Box sx={{ width: '105px', lineHeight: '0', marginRight: '32px' }} component={Link} href="/">
+                    <Box
+                        sx={{
+                            minWidth: '105px',
+                            maxWidth: '108px',
+                            lineHeight: '0',
+                            marginRight: { xs: '0px', md: '2rem' },
+                            paddingY: { xs: '15px', md: '0px' },
+                        }}
+                        component={Link}
+                        href="/"
+                    >
                         <img style={{ width: '100%' }} src="/logoz.webp" alt="My Image" />
                     </Box>
-                    <Box sx={{ display: 'flex', flexGrow: 1, alignItems: 'center' }}>
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexGrow: 1,
+                            alignItems: 'center',
+                            flexDirection: { xs: 'column', md: 'row' },
+                            paddingBottom: { xs: '16px', md: '0px' },
+                            justifyContent: { xs: 'center', md: 'flex-start' },
+                            width: { xs: '100%', md: 'auto' },
+                        }}
+                    >
                         {menuFooters.map((item, index) => (
-                            <Box key={index} component={Link} href={item.href} sx={{ textDecoration: 'none' }}>
-                                <Typography sx={{ color: '#fff', fontSize: '13px', width: '100%', padding: ' 0 8px' }}>
+                            <Box
+                                key={index}
+                                component={Link}
+                                href={item.href}
+                                sx={{
+                                    textDecoration: 'none',
+                                    height: { xs: '40px', md: 'auto' },
+                                    backgroundColor: { xs: 'rgba(0,0,0,.2)', md: 'transparent' },
+                                    width: { xs: '100%', md: 'auto' },
+                                    marginBottom: { xs: '8px', md: '0' },
+                                    borderRadius: { xs: '20px', md: '0' },
+                                    display: { xs: 'flex', md: 'block' },
+                                    alignItems: 'center',
+                                }}
+                            >
+                                <Typography
+                                    sx={{
+                                        color: '#fff',
+                                        fontSize: '13px',
+                                        width: '100%',
+                                        padding: ' 0 15px',
+                                        textAlign: 'start',
+                                    }}
+                                >
                                     {item.name}
                                 </Typography>
                             </Box>
                         ))}
                     </Box>
-                    <Box sx={{ display: 'flex' }}>
+                    <Box sx={{ display: 'flex', paddingBottom: { xs: '24px', md: '0px' } }}>
                         {menuIcons.map((item, index) => {
                             const IconComponent = item.icon;
                             return (

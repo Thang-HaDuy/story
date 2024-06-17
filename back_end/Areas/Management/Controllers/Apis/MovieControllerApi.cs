@@ -1,0 +1,39 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using App.Areas.Management.Services.MovieServices;
+using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Mvc;
+
+namespace App.Areas.Management.Controllers.Apis
+{
+    [ApiController]
+    [Route("api/[controller]")]
+    public class MovieControllerApi : ControllerBase
+    {
+        private readonly IMovieService _movieService;
+
+        public MovieControllerApi(IMovieService MovieService)
+        {
+            _movieService = MovieService;
+        }
+
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchAsync(string query, string? type, int? page, int? pagesite)
+        {
+            var result = await _movieService.SearchAsync(query, type, page, pagesite);
+
+            if (result.Error == true)
+            {
+                if (result.Data == null)
+                {
+                    return NoContent();
+                }
+                return NotFound();
+            }
+
+            return Ok(result.Data);
+        }
+    }
+}
