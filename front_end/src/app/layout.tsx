@@ -2,9 +2,10 @@ import Footer from '@/components/footer/Footer';
 import Header from '@/components/header/Header';
 import { MuiProvider } from '@/lib/mui/MuiProvider';
 import { Providers } from '@/lib/redux/StoreProvider';
-import { Box } from '@mui/material';
-
-// <body style={{ backgroundColor: '#263238' }}>
+import Container from '@mui/material/Container';
+import Box from '@mui/material/Box';
+import Announcement from '@/components/content/announcement/Announcement';
+import ListMovieTop from '@/components/content/list-movie-top/ListMovieTop';
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -21,11 +22,25 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
             <body>
                 <Providers>
                     <MuiProvider>
-                        <Box>
-                            <Header />
-                            {children}
-                            <Footer />
-                        </Box>
+                        <Header />
+                        <Container sx={{ padding: '10px 20px' }}>
+                            <Box
+                                sx={{
+                                    backgroundColor: 'background.paper',
+                                    padding: '18px',
+                                }}
+                            >
+                                <Announcement />
+                                <ListMovieTop />
+                                <Box sx={{ display: { xs: 'flex' } }}>
+                                    {children}
+                                    <Box>
+                                        <h1>sidebar</h1>
+                                    </Box>
+                                </Box>
+                            </Box>
+                        </Container>
+                        <Footer />
                     </MuiProvider>
                 </Providers>
             </body>
