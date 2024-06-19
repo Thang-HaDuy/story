@@ -15,6 +15,7 @@ const ImageMovie: React.FC<IImageMovie> = ({ src, alt }) => {
                 display: 'block',
                 overflow: 'hidden',
                 objectFit: 'cover',
+                borderRadius: '3px',
             }}
             src={src}
             alt={alt}

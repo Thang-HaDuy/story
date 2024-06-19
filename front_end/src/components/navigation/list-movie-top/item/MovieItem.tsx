@@ -1,4 +1,4 @@
-import { TutorialStep } from '@/components/content/list-movie-top/ListMovieTop';
+import { TutorialStep } from '@/components/navigation/list-movie-top/ListMovieTop';
 import Rating from '@/components/ui/Rating';
 import SelectHover from '@/components/ui/SelectHover';
 import TotalEpisode from '@/components/ui/TotalEpisode';

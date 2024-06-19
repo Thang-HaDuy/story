@@ -1,11 +1,16 @@
 import Footer from '@/components/footer/Footer';
 import Header from '@/components/header/Header';
 import { MuiProvider } from '@/lib/mui/MuiProvider';
-import { Providers } from '@/lib/redux/StoreProvider';
+import ReduxProviders from '@/lib/redux/StoreProvider';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Announcement from '@/components/content/announcement/Announcement';
-import ListMovieTop from '@/components/content/list-movie-top/ListMovieTop';
+import Announcement from '@/components/navigation/announcement/Announcement';
+import ListMovieTop from '@/components/navigation/list-movie-top/ListMovieTop';
+import Sidebar from '@/components/sidebar/Sidebar';
+
+export const metadata = {
+    title: 'Anime Vietsub Online',
+};
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -20,10 +25,10 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                 <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
             </head>
             <body>
-                <Providers>
+                <ReduxProviders>
                     <MuiProvider>
                         <Header />
-                        <Container sx={{ padding: '10px 20px' }}>
+                        <Container sx={{ padding: { xs: '0', md: '10px 20px' } }}>
                             <Box
                                 sx={{
                                     backgroundColor: 'background.paper',
@@ -33,16 +38,14 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                                 <Announcement />
                                 <ListMovieTop />
                                 <Box sx={{ display: { xs: 'flex' } }}>
-                                    {children}
-                                    <Box>
-                                        <h1>sidebar</h1>
-                                    </Box>
+                                    <Box sx={{ flexGrow: '1' }}>{children}</Box>
+                                    <Sidebar />
                                 </Box>
                             </Box>
                         </Container>
                         <Footer />
                     </MuiProvider>
-                </Providers>
+                </ReduxProviders>
             </body>
         </html>
     );

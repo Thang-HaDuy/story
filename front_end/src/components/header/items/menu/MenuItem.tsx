@@ -62,17 +62,17 @@ const MenuItems = () => {
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}>
             <MenuDropDown contents={topAnime} className="topAnime">
                 <Button sx={{ color: '#fff', '&:hover': { backgroundColor: 'transparent' } }}>
-                    TOP ANIME <KeyboardArrowDownIcon />
+                    TOP ANIME <KeyboardArrowDownIcon sx={{ color: '#b5e745' }} />
                 </Button>
             </MenuDropDown>
             <MenuDropDown contents={theLoai} className="theLoai">
                 <Button sx={{ color: '#fff', '&:hover': { backgroundColor: 'transparent' } }}>
-                    THỂ LOẠI <KeyboardArrowDownIcon />
+                    THỂ LOẠI <KeyboardArrowDownIcon sx={{ color: '#b5e745' }} />
                 </Button>
             </MenuDropDown>
             <MenuDropDown contents={seasion} className="seasion">
                 <Button sx={{ color: '#fff', '&:hover': { backgroundColor: 'transparent' } }}>
-                    SEASION <KeyboardArrowDownIcon />
+                    SEASION <KeyboardArrowDownIcon sx={{ color: '#b5e745' }} />
                 </Button>
             </MenuDropDown>
 

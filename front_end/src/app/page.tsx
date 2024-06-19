@@ -1,9 +1,9 @@
 'use client';
 
-import { Box, Container } from '@mui/material';
+import Box from '@mui/material/Box';
 
 const Home = () => {
-    return <Box sx={{ padding: '20px' }}>hello</Box>;
+    return <Box sx={{ flexGrow: '1' }}>hello</Box>;
 };
 
 export default Home;

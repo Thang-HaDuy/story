@@ -1,19 +1,13 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Swiper, SwiperSlide } from 'swiper/react'; // Import Swiper và SwiperSlide từ thư viện swiper/react
-import 'swiper/swiper-bundle.css'; // Import CSS của Swiper
-import IconButton from '@mui/material/IconButton'; // Import IconButton từ Material-UI
-import Box from '@mui/material/Box'; // Import Box từ Material-UI
-import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'; // Import KeyboardArrowRight từ Material-UI
-import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'; // Import KeyboardArrowLeft từ Material-UI
-import Link from 'next/link';
-import Typography from '@mui/material/Typography';
-import SelectHover from '@/components/ui/SelectHover';
-import Rating from '@/components/ui/Rating';
-import TotalEpisode from '@/components/ui/TotalEpisode';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import 'swiper/swiper-bundle.css';
+import IconButton from '@mui/material/IconButton';
+import Box from '@mui/material/Box';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import MovieItem from './item/MovieItem';
-import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
 
 export interface TutorialStep {
     label: string;
@@ -29,7 +23,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect31',
@@ -37,7 +31,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect32',
@@ -45,7 +39,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect33',
@@ -53,7 +47,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect34',
@@ -61,7 +55,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect35',
@@ -69,7 +63,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect36',
@@ -77,7 +71,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect37',
@@ -85,7 +79,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect38',
@@ -93,7 +87,7 @@ const ListMovieTop: React.FC = () => {
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',
-            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng Viên Dũng Giả Từ Cấp Độ Hai',
+            text: 'Cuộc Sống Thảnh Thơi Tại Dị Giới Gian Lận Của Cựu Ứng',
             episode: 5,
             rating: 4.3,
             className: 'hoverEffect39',
@@ -115,18 +109,18 @@ const ListMovieTop: React.FC = () => {
         },
     };
 
-    const [swiper, setSwiper] = useState<any>(null); // State để lưu trữ swiper instance
+    const [swiper, setSwiper] = useState<any>(null);
 
     const handleNext = () => {
-        if (swiper) swiper.slideNext(); // Hàm xử lý khi nhấn nút Next
+        if (swiper) swiper.slideNext();
     };
 
     const handleBack = () => {
-        if (swiper) swiper.slidePrev(); // Hàm xử lý khi nhấn nút Back
+        if (swiper) swiper.slidePrev();
     };
 
     return (
-        <Box sx={{ position: 'relative', maxWidth: '100%', flexGrow: 1 }}>
+        <Box sx={{ position: 'relative', maxWidth: '100%', flexGrow: 1, marginBottom: '20px', borderRadius: '3px' }}>
             <Box
                 component={Swiper}
                 sx={{ marginX: '-9.6px' }}
@@ -184,52 +178,3 @@ const ListMovieTop: React.FC = () => {
 };
 
 export default ListMovieTop;
-
-// <SwiperSlide key={index}>
-//     <Box
-//         component={Link}
-//         href={'/'}
-//         sx={{
-//             '&:hover': {
-//                 [`& .${step.className}`]: { display: 'flex' },
-//             },
-//         }}
-//     >
-//         <Box sx={{ marginX: '9.6px', position: 'relative' }}>
-//             <Box
-//                 component="img"
-//                 sx={{
-//                     maxHeight: '300px',
-//                     width: '100%',
-//                     display: 'block',
-//                     overflow: 'hidden',
-//                     objectFit: 'cover',
-//                 }}
-//                 src={step.imgPath}
-//                 alt={step.label}
-//             />
-//             <Typography
-//                 sx={{
-//                     color: '#fff',
-//                     zIndex: '5',
-//                     position: 'absolute',
-//                     bottom: '0px',
-//                     left: '0',
-//                     right: '0',
-//                     padding: '10px',
-//                     paddingTop: '50px',
-//                     fontSize: '12px',
-//                     fontWeight: '400',
-//                     lineHeight: '16px',
-//                     textAlign: 'center',
-//                     background: 'linear-gradient(to bottom,rgba(0,0,0,0) 0,rgba(0,0,0,.65) 100%)',
-//                 }}
-//             >
-//                 {step.text}
-//             </Typography>
-//             <TotalEpisode episode={step.episode} />
-//             <Rating number={step.rating} />
-//             <SelectHover className={step.className} />
-//         </Box>
-//     </Box>
-// </SwiperSlide>
