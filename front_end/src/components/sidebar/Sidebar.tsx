@@ -7,7 +7,7 @@ import SuggestedTagList from './item/suggested-tag-list/SuggestedTagList';
 
 const Sidebar = () => {
     return (
-        <Box sx={{ width: '300px', display: { xs: 'none', md: 'block' } }}>
+        <Box sx={{ width: { xs: 'auto', md: '300px' } }}>
             <RandomAnime />
             <JoinGround />
             <AnimeNewUpdate />

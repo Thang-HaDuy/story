@@ -1,4 +1,3 @@
-import { TutorialStep } from '@/components/navigation/list-movie-top/ListMovieTop';
 import Rating from '@/components/ui/Rating';
 import SelectHover from '@/components/ui/SelectHover';
 import TotalEpisode from '@/components/ui/TotalEpisode';
@@ -7,11 +6,15 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ImageMovie from '@/components/ui/ImageMovie';
 
-interface IMovieItem {
-    step: TutorialStep;
+export interface ITutorialStep {
+    label: string;
+    imgPath: string;
+    text: string;
+    episode: number;
+    rating: number;
+    className: string;
 }
-
-const MovieItem: React.FC<IMovieItem> = ({ step }) => {
+const MovieItem = ({ step }: { step: ITutorialStep }) => {
     return (
         <Box component={Link} href={'/'}>
             <Box

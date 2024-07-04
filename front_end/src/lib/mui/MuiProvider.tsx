@@ -5,7 +5,7 @@ import { CssBaseline, ThemeProvider } from '@mui/material';
 
 import theme from './Theme';
 
-export const MuiProvider = ({ children }: { children: React.ReactNode }) => {
+const MuiProvider = ({ children }: { children: React.ReactNode }) => {
     return (
         <ThemeProvider theme={theme}>
             <AppRouterCacheProvider>
@@ -15,3 +15,5 @@ export const MuiProvider = ({ children }: { children: React.ReactNode }) => {
         </ThemeProvider>
     );
 };
+
+export default MuiProvider;

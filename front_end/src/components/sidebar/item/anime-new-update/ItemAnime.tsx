@@ -10,6 +10,7 @@ const ItemAnime = ({ item }: { item: INewAnime }) => {
             href="/login"
             sx={{
                 display: 'flex',
+                justifyContent: 'space-between',
                 borderBottom: '1px solid #171515',
                 padding: '6px',
                 textDecoration: 'none',
@@ -25,7 +26,7 @@ const ItemAnime = ({ item }: { item: INewAnime }) => {
                     whiteSpace: 'nowrap',
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
-                    maxWidth: '220px',
+                    maxWidth: '70%',
                     paddingRight: '20px',
                     '&:hover': { color: '#fff' },
                 }}

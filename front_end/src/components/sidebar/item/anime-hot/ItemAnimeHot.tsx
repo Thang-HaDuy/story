@@ -1,15 +1,18 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import StarIcon from '@mui/icons-material/Star';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import DateRangeIcon from '@mui/icons-material/DateRange';
 import ImageMovie from '@/components/ui/ImageMovie';
 import SelectHover from '@/components/ui/SelectHover';
 import { IItemAnime } from './AnimeHot';
+import InforList, { IInforItem } from '@/components/ui/InforList';
 
 const ItemAnimeHot = ({ item, index }: { item: IItemAnime; index: number }) => {
-    const [datePart] = item.date.split(' ');
-    const [day] = datePart.split('-');
+    const iteminfor: IInforItem = {
+        rating: item.rating,
+        date: item.date,
+        quality: item.quality,
+        period: item.period,
+        color: '#78909c',
+    };
 
     return (
         <Box
@@ -94,7 +97,7 @@ const ItemAnimeHot = ({ item, index }: { item: IItemAnime; index: number }) => {
                         lineHeight: '20px',
                         fontSize: '13px',
                         fontWeight: '400',
-                        maxWidth: '215px',
+                        maxWidth: { xs: 'auto', md: '215px' },
                         maxHeight: '40px',
                         cursor: 'pointer',
                         overflow: 'hidden',
@@ -102,54 +105,7 @@ const ItemAnimeHot = ({ item, index }: { item: IItemAnime; index: number }) => {
                 >
                     {item.name}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <Typography
-                        sx={{
-                            fontSize: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            marginRight: '8px',
-                            color: '#b5e745',
-                        }}
-                    >
-                        <StarIcon sx={{ fontSize: '14px', marginRight: '4px' }} />
-                        {item.rating}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            fontSize: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            marginRight: '8px',
-                            color: '#78909c',
-                        }}
-                    >
-                        <AccessTimeIcon sx={{ fontSize: '14px', marginRight: '4px' }} />
-                        {item.period}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            fontSize: '12px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            marginRight: '8px',
-                            color: '#78909c',
-                        }}
-                    >
-                        <DateRangeIcon sx={{ fontSize: '14px', marginRight: '4px' }} />
-                        {day}
-                    </Typography>
-                    <Typography
-                        sx={{
-                            fontSize: '12px',
-                            backgroundColor: '#e62117',
-                            borderRadius: '10px',
-                            paddingX: '9.6px',
-                        }}
-                    >
-                        {item.quality}
-                    </Typography>
-                </Box>
+                <InforList item={iteminfor} />
             </Box>
         </Box>
     );

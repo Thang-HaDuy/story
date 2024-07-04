@@ -3,23 +3,16 @@
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import React from 'react';
-import Suggest from './component/Suggest';
+import Suggest, { ISuggest } from './component/Suggest';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
 import useDebounce from './component/useDebounce';
 
-export interface suggestData {
-    fileName: string;
-    name: string;
-    episode: string;
-    id: string;
-    countEpisodes: number;
-}
 const Search = () => {
     const [openSuggest, setOpenSuggest] = React.useState(false);
     const [searchValue, setSearchValue] = React.useState('');
-    const [searchResult, setSearchResult] = React.useState<suggestData[]>([]);
+    const [searchResult, setSearchResult] = React.useState<ISuggest[]>([]);
 
     const debouncedValue = useDebounce(searchValue, 500);
 
@@ -35,7 +28,7 @@ const Search = () => {
                     `${process.env.NEXT_PUBLIC_BASE_API}api/MovieControllerApi/search?query=${debouncedValue}`,
                 );
                 if (response.status === 200) {
-                    const result: suggestData[] = await response.json();
+                    const result: ISuggest[] = await response.json();
                     setSearchResult(result);
                 }
                 if (response.status === 204) {

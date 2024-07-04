@@ -7,19 +7,10 @@ import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import MovieItem from './item/MovieItem';
-
-export interface TutorialStep {
-    label: string;
-    imgPath: string;
-    text: string;
-    episode: number;
-    rating: number;
-    className: string;
-}
+import MovieItem, { ITutorialStep } from './item/MovieItem';
 
 const ListMovieTop: React.FC = () => {
-    const tutorialSteps: TutorialStep[] = [
+    const tutorialSteps: ITutorialStep[] = [
         {
             label: 'San Francisco 10',
             imgPath: '/02yvy2ix.webp',

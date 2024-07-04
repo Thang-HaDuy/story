@@ -3,11 +3,8 @@ import Box from '@mui/material/Box';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Link from 'next/link';
 import MenuDropDown from './MenuDropDown';
+import { Item } from './ItemDropdown';
 
-export interface Item {
-    text: string;
-    href: string;
-}
 export const topAnime: Item[] = [
     { href: 'day.html', text: 'Theo Ngày' },
     { href: 'seasion.html', text: 'Theo Mùa' },

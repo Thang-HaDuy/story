@@ -3,13 +3,16 @@ import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import React from 'react';
 import Link from 'next/link';
-import { suggestData } from '../Search';
 
-interface suggert {
-    suggestData: suggestData;
+export interface ISuggest {
+    fileName: string;
+    name: string;
+    episode: string;
+    id: string;
+    countEpisodes: number;
 }
 
-const Suggest: React.FC<suggert> = ({ suggestData }) => {
+const Suggest = ({ suggestData }: { suggestData: ISuggest }) => {
     return (
         <MenuItem sx={{ padding: '5px 10px', borderBottom: '1px solid #222e33' }}>
             <Box component={Link} href={'suggestData.href'} sx={{ display: 'flex', textDecoration: 'none' }}>
