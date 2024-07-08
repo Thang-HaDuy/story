@@ -11,7 +11,7 @@ const TitleSidebar = ({ children, content }: { children: React.ReactNode; conten
                 marginBottom: '20px',
                 position: 'relative',
                 display: 'flex',
-                alignContent: 'center',
+                alignItems: 'center',
                 '&::before': {
                     content: '""',
                     position: 'absolute',

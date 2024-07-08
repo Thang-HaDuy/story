@@ -21,6 +21,7 @@ const SelectHover: React.FC<ISelectHover> = ({ className }) => {
                 justifyContent: 'center',
                 alignItems: 'center',
                 borderRadius: '3px',
+                zIndex: 10,
             }}
         >
             <PlayCircleOutlineIcon sx={{ color: '#fff', fontSize: '300%' }} />

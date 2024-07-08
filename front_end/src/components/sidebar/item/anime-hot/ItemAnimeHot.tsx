@@ -2,18 +2,10 @@ import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import ImageMovie from '@/components/ui/ImageMovie';
 import SelectHover from '@/components/ui/SelectHover';
+import InforList from '@/components/ui/InforList';
 import { IItemAnime } from './AnimeHot';
-import InforList, { IInforItem } from '@/components/ui/InforList';
 
 const ItemAnimeHot = ({ item, index }: { item: IItemAnime; index: number }) => {
-    const iteminfor: IInforItem = {
-        rating: item.rating,
-        date: item.date,
-        quality: item.quality,
-        period: item.period,
-        color: '#78909c',
-    };
-
     return (
         <Box
             sx={{
@@ -105,7 +97,7 @@ const ItemAnimeHot = ({ item, index }: { item: IItemAnime; index: number }) => {
                 >
                     {item.name}
                 </Typography>
-                <InforList item={iteminfor} />
+                <InforList item={item.info} color="#78909c" />
             </Box>
         </Box>
     );

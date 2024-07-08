@@ -2,8 +2,8 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import Link from 'next/link';
-import MenuDropDown from './MenuDropDown';
-import { Item } from './ItemDropdown';
+import MenuDropDown from '@/components/header/items/menu/MenuDropDown';
+import { Item } from '@/components/header/items/menu/ItemDropdown';
 
 export const topAnime: Item[] = [
     { href: 'day.html', text: 'Theo Ngày' },

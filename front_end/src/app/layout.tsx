@@ -4,9 +4,8 @@ import MuiProvider from '@/lib/mui/MuiProvider';
 import ReduxProviders from '@/lib/redux/StoreProvider';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import Announcement from '@/components/navigation/announcement/Announcement';
-import ListMovieTop from '@/components/navigation/list-movie-top/ListMovieTop';
 import Sidebar from '@/components/sidebar/Sidebar';
+import Navigation from '@/components/navigation/Navigation';
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
     return (
@@ -31,8 +30,7 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                                     padding: '18px',
                                 }}
                             >
-                                <Announcement />
-                                <ListMovieTop />
+                                <Navigation />
                                 <Box sx={{ display: { xs: 'flex' }, flexDirection: { xs: 'column', md: 'row' } }}>
                                     {children}
                                     <Sidebar />

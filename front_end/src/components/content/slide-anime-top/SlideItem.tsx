@@ -3,7 +3,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
-import InforList from '@/components/ui/InforList';
+import InforList, { IInforItem } from '@/components/ui/InforList';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import MovieIcon from '@mui/icons-material/Movie';
 import PersonIcon from '@mui/icons-material/Person';
@@ -19,13 +19,7 @@ export interface IStep {
     rating: number;
     className: string;
     categories: string[];
-    info: {
-        rating: number;
-        date: string;
-        quality: string;
-        period: string;
-        color: string;
-    };
+    info: IInforItem;
 }
 
 const SlideItem = ({ step }: { step: IStep }) => {
@@ -72,9 +66,7 @@ const SlideItem = ({ step }: { step: IStep }) => {
                         {step.name}
                     </Typography>
                 </Box>
-                <Box sx={{ marginBottom: '6.5px' }}>
-                    <InforList item={step.info} />
-                </Box>
+                <InforList item={step.info} />
                 <Typography
                     sx={{
                         marginBottom: '9.6px',

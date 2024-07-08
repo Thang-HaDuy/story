@@ -2,8 +2,8 @@ import React from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 
-import { Item } from './MenuItem';
-import Itemdropdown from './ItemDropdown';
+import { Item } from '@/components/header/items/menu/ItemDropdown';
+import Itemdropdown from '@/components/header/items/menu/ItemDropdown';
 
 interface MenuDropDownProps {
     children: React.ReactNode;

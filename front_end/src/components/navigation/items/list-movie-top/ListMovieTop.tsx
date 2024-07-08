@@ -7,7 +7,7 @@ import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
-import MovieItem, { ITutorialStep } from './item/MovieItem';
+import MovieItem, { ITutorialStep } from './MovieItem';
 
 const ListMovieTop: React.FC = () => {
     const tutorialSteps: ITutorialStep[] = [

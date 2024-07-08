@@ -9,15 +9,14 @@ export interface IInforItem {
     date: string;
     quality: string;
     period: string;
-    color: string;
 }
 
-const InforList = ({ item }: { item: IInforItem }) => {
+const InforList = ({ item, color }: { item: IInforItem; color: string }) => {
     const [datePart] = item.date.split(' ');
     const [year] = datePart.split('-');
 
     return (
-        <Box sx={{ display: 'flex', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: '6.4px' }}>
             <Typography
                 sx={{
                     fontSize: '12px',
@@ -36,7 +35,7 @@ const InforList = ({ item }: { item: IInforItem }) => {
                     display: 'flex',
                     alignItems: 'center',
                     marginRight: '8px',
-                    color: item.color,
+                    color: color,
                 }}
             >
                 <AccessTimeIcon sx={{ fontSize: '14px', marginRight: '4px' }} />
@@ -48,7 +47,7 @@ const InforList = ({ item }: { item: IInforItem }) => {
                     display: 'flex',
                     alignItems: 'center',
                     marginRight: '8px',
-                    color: item.color,
+                    color: color,
                 }}
             >
                 <DateRangeIcon sx={{ fontSize: '14px', marginRight: '4px' }} />

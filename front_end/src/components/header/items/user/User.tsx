@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@mui/material/Button';
 import Link from 'next/link';
-import UserDropdown from './UserDropDown';
+import UserDropdown from '@/components/header/items/user/UserDropDown';
 import Box from '@mui/material/Box';
 
 const User = () => {

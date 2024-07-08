@@ -4,10 +4,10 @@ import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import Container from '@mui/material/Container';
 import Link from 'next/link';
-import MenuItems from './items/menu/MenuItem';
-import User from './items/user/User';
-import Search from './items/search/Search';
-import ButtonMobile from './items/mobile/ButomMobile';
+import MenuItems from '@/components/header/items/menu/MenuItem';
+import User from '@/components/header/items/user/User';
+import Search from '@/components/header/items/search/Search';
+import ButtonMobile from '@/components/header/items/mobile/ButomMobile';
 
 const Header = () => {
     return (

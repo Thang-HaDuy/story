@@ -106,6 +106,7 @@ const SlideAnimeTop = () => {
                     backgroundColor: '#b71c1c',
                     opacity: 1,
                 },
+                marginBottom: '20px',
             }}
         >
             {tutorialSteps.map((step, index) => (

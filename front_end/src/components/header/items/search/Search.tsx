@@ -3,11 +3,11 @@
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import React from 'react';
-import Suggest, { ISuggest } from './component/Suggest';
+import Suggest, { ISuggest } from '@/components/header/items/search/component/Suggest';
 import IconButton from '@mui/material/IconButton';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon from '@mui/icons-material/Search';
-import useDebounce from './component/useDebounce';
+import useDebounce from '@/components/header/items/search/component/useDebounce';
 
 const Search = () => {
     const [openSuggest, setOpenSuggest] = React.useState(false);
