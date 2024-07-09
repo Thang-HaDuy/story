@@ -32,14 +32,19 @@ const RootLayout = ({ children }: { children: React.ReactNode }) => {
                                 }}
                             >
                                 <Navigation />
-                                <Grid container>
-                                    <Grid item xs={12} md={8.5}>
-                                        {children}
-                                    </Grid>
-                                    <Grid item xs={12} md={3.5}>
+
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        gap: '20px',
+                                        flexDirection: { xs: 'column', md: 'row' },
+                                    }}
+                                >
+                                    <Box sx={{ flexGrow: 1, minWidth: 0 }}>{children}</Box>
+                                    <Box sx={{ width: { xs: 'auto', md: '300px' }, flexShrink: 0 }}>
                                         <Sidebar />
-                                    </Grid>
-                                </Grid>
+                                    </Box>
+                                </Box>
                             </Box>
                         </Container>
                         <Footer />

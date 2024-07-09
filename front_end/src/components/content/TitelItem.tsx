@@ -17,7 +17,6 @@ const TitelItem = ({
         <Box>
             <Box
                 sx={{
-                    display: 'flex',
                     marginBottom: '20px',
                 }}
             >

@@ -7,13 +7,13 @@ import SuggestedTagList from './item/suggested-tag-list/SuggestedTagList';
 
 const Sidebar = () => {
     return (
-        <Box sx={{ width: { xs: 'auto', md: '300px' } }}>
+        <>
             <RandomAnime />
             <JoinGround />
             <AnimeNewUpdate />
             <AnimeHot />
             <SuggestedTagList />
-        </Box>
+        </>
     );
 };
 

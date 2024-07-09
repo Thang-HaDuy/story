@@ -25,7 +25,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -45,7 +44,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -65,7 +63,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -85,7 +82,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -105,7 +101,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -125,7 +120,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -145,7 +139,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -165,7 +158,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -185,7 +177,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -205,7 +196,6 @@ const NominatedAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -220,7 +210,7 @@ const NominatedAnime = () => {
         <TitelItem
             title="ĐỀ CỬ"
             childrenTitle={
-                <Box>
+                <>
                     {buttonLabels.map((label) => (
                         <Button
                             key={label}
@@ -236,7 +226,7 @@ const NominatedAnime = () => {
                             {label}
                         </Button>
                     ))}
-                </Box>
+                </>
             }
         >
             <Grid container sx={{ marginX: '-10px', width: 'auto' }}>

@@ -10,12 +10,12 @@ export const metadata = {
 
 const Page = () => {
     return (
-        <Box sx={{ flexGrow: '1', width: '100%', maxWidth: '825px', paddingRight: '20px' }}>
+        <>
             <SlideAnimeTop />
             <AnimeUpdate />
             <UpcommingAnime />
             <NominatedAnime />
-        </Box>
+        </>
     );
 };
 

@@ -1,7 +1,8 @@
+'use client';
+
 import TitelItem from '@/components/content/TitelItem';
 import Grid from '@mui/material/Grid';
 import UpcommingItem, { IUpcommingItem } from './UpcommingItem';
-import { IAnimeUpdateItem } from '../anime-update/AnimeUpdateItem';
 
 const UpcommingAnime = () => {
     const items: IUpcommingItem[] = [
@@ -20,7 +21,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -39,7 +39,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -58,7 +57,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -77,7 +75,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -96,7 +93,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -115,7 +111,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -134,7 +129,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -153,7 +147,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -172,7 +165,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
@@ -191,7 +183,6 @@ const UpcommingAnime = () => {
                     date: '2024-3-5',
                     quality: 'HD',
                     period: '3/6',
-                    color: '#78909c',
                 },
             },
         },
