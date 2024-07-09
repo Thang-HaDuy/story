@@ -54,6 +54,11 @@ export const seasion: Item[] = [
     { href: 'voied.html', text: 'Mùa Xuân 2022' },
     { href: 'voied.html', text: 'Mùa Hạ 2022' },
 ];
+
+export const navs: Item[] = [
+    { href: 'anime/library/A/', text: 'THƯ VIỆN' },
+    { href: '/lich-chieu-phim.html', text: 'LỊCH CHIẾU' },
+];
 const MenuItems = () => {
     return (
         <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'block' } }}>
@@ -72,13 +77,16 @@ const MenuItems = () => {
                     SEASION <KeyboardArrowDownIcon sx={{ color: '#b5e745' }} />
                 </Button>
             </MenuDropDown>
-
-            <Button component={Link} href="/" sx={{ color: '#fff', '&:hover': { backgroundColor: 'transparent' } }}>
-                THƯ VIỆN
-            </Button>
-            <Button component={Link} href="/" sx={{ color: '#fff', '&:hover': { backgroundColor: 'transparent' } }}>
-                LỊCH CHIẾU
-            </Button>
+            {navs.map((nav, index) => (
+                <Button
+                    key={index}
+                    component={Link}
+                    href={nav.href}
+                    sx={{ color: '#fff', '&:hover': { backgroundColor: 'transparent' } }}
+                >
+                    {nav.text}
+                </Button>
+            ))}
         </Box>
     );
 };

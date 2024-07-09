@@ -8,7 +8,7 @@ export const metadata = {
     title: 'Anime Vietsub Online',
 };
 
-const Home = () => {
+const Page = () => {
     return (
         <Box sx={{ flexGrow: '1', width: '100%', maxWidth: '825px', paddingRight: '20px' }}>
             <SlideAnimeTop />
@@ -19,4 +19,4 @@ const Home = () => {
     );
 };
 
-export default Home;
+export default Page;

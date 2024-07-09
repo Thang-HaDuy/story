@@ -1,6 +1,6 @@
 import React from 'react';
 import DrawerDropDown from './DrawerDropDown';
-import { seasion, theLoai, topAnime } from '@/components/header/items/menu/MenuItem';
+import { navs, seasion, theLoai, topAnime } from '@/components/header/items/menu/MenuItem';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Link from 'next/link';
@@ -91,38 +91,25 @@ const MenuDrawer: React.FC = () => {
                 >
                     THỂ LOẠI
                 </DrawerDropDown>
-                <Box
-                    sx={{
-                        textDecoration: 'none',
-                        color: 'text.primary',
-                        fontSize: '13px',
-                        padding: '0 8px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        '&:hover': { backgroundColor: 'rgba(0,0,0,0.5)' },
-                    }}
-                    component={Link}
-                    href={'/'}
-                >
-                    THƯ VIỆN
-                </Box>
-                <Box
-                    sx={{
-                        textDecoration: 'none',
-                        color: 'text.primary',
-                        fontSize: '13px',
-                        padding: '0 8px',
-                        height: '40px',
-                        display: 'flex',
-                        alignItems: 'center',
-                        '&:hover': { backgroundColor: 'rgba(0,0,0,0.5)' },
-                    }}
-                    component={Link}
-                    href={'/'}
-                >
-                    LỊCH CHIẾU
-                </Box>
+                {navs.map((nav, index) => (
+                    <Box
+                        key={index}
+                        component={Link}
+                        href={nav.href}
+                        sx={{
+                            textDecoration: 'none',
+                            color: 'text.primary',
+                            fontSize: '13px',
+                            padding: '0 8px',
+                            height: '40px',
+                            display: 'flex',
+                            alignItems: 'center',
+                            '&:hover': { backgroundColor: 'rgba(0,0,0,0.5)' },
+                        }}
+                    >
+                        {nav.text}
+                    </Box>
+                ))}
             </Box>
         </Box>
     );
