@@ -1,19 +1,22 @@
 using System.Reflection;
+using System.Text;
 using App.Areas.Management.Services.MovieServices;
 using App.Areas.Panel.Menu;
 using App.Data;
 using App.Models;
 using App.Services.AccountService;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
-using Microsoft.AspNetCore.Mvc.Razor;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
 var builder = WebApplication.CreateBuilder(args);
+var MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+var origins = builder.Configuration.GetSection("HostClient:frontend").Get<string[]>();
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
@@ -55,7 +58,25 @@ builder.Services.AddDbContext<DataDbContext>(option =>
 builder.Services.AddIdentity<AppUser, IdentityRole>()
         .AddEntityFrameworkStores<DataDbContext>()
         .AddDefaultTokenProviders();
-
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    var jwtSettings = builder.Configuration.GetSection("JwtSettings");
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuer = true,
+        ValidateAudience = true,
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = jwtSettings["Issuer"],
+        ValidAudience = jwtSettings["Audience"],
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSettings["Secret"]!))
+    };
+});
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Login/";
@@ -64,17 +85,20 @@ builder.Services.ConfigureApplicationCookie(options =>
 });
 builder.Services.AddScoped<IAccountService, AccountService>();
 builder.Services.AddScoped<IMovieService, MovieService>();
+builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<AdminSidebarService>();
 
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy(name: MyAllowSpecificOrigins,
-                      policy =>
-                      {
-                          policy.WithOrigins(builder.Configuration["HostClient:frontend"]);
-                      });
+    options.AddPolicy(name: MyAllowSpecificOrigins, policy =>
+    {
+        policy.WithOrigins(origins!)
+              .AllowAnyHeader()
+              .AllowAnyMethod();
+    });
 });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

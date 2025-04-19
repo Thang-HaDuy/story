@@ -17,19 +17,19 @@ namespace App.Areas.Management.Models
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Column(TypeName = "nvarchar")]
         [StringLength(100)]
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Display(Name = "Mô Tả")]
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Column(TypeName = "nvarchar")]
         [StringLength(100)]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Display(Name = "Tác Giả")]
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Column(TypeName = "nvarchar")]
         [StringLength(100)]
-        public string Author { get; set; }
+        public string? Author { get; set; }
 
         [Display(Name = "Ảnh Chính")]
         public string? FileName { get; set; }
@@ -42,7 +42,7 @@ namespace App.Areas.Management.Models
 
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Display(Name = "Trạng Thái")]
-        public string Status { get; set; }
+        public string? Status { get; set; }
         public DateTime? CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
         public DateTime? DeletedAt { get; set; }

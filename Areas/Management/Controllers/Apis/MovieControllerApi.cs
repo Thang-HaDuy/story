@@ -24,14 +24,9 @@ namespace App.Areas.Management.Controllers.Apis
         {
             var result = await _movieService.SearchAsync(query, type, page, pagesite);
 
-            if (result.Error == true)
-            {
-                if (result.Data == null)
-                {
-                    return NoContent();
-                }
-                return NotFound();
-            }
+            if (result.Error == true) return NotFound();
+
+            if (result.Data == null) return NoContent();
 
             return Ok(result.Data);
         }

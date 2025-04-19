@@ -35,7 +35,7 @@ namespace App.Areas.Management.Services.MovieServices
                 var pageSize = pagelimit ?? 30;
 
                 movies = await _context.movies
-                                    .Where(m => m.Name.Contains(query))
+                                    .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
                                     .Include(m => m.Ratings)
                                     .Include(m => m.views)
@@ -43,23 +43,23 @@ namespace App.Areas.Management.Services.MovieServices
                                     {
                                         Id = m.Id,
                                         Name = m.Name,
-                                        CountEpisodes = m.Episodes.Count(),
+                                        CountEpisodes = m.Episodes!.Count(),
                                         FileName = m.FileName,
-                                        CountViews = m.views.Count(),
-                                        vote = m.Ratings.Count(),
+                                        CountViews = m.views!.Count(),
+                                        vote = m.Ratings!.Count(),
                                     })
                                     .ToPagedListAsync(pageNumber, pageSize);
             }
             else
             {
                 movies = await _context.movies
-                                    .Where(m => m.Name.Contains(query))
+                                    .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
                                     .Select(m => new MovieSearchDto()
                                     {
                                         Id = m.Id,
                                         Name = m.Name,
-                                        CountEpisodes = m.Episodes.Count(),
+                                        CountEpisodes = m.Episodes!.Count(),
                                         FileName = m.FileName,
                                     })
                                     .ToPagedListAsync(1, 5);
