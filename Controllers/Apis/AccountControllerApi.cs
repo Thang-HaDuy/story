@@ -1,7 +1,6 @@
 using App.Models;
 using App.Models.ViewModels;
 using App.Services.AccountService;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace App.Controllers.Apis
@@ -18,24 +17,60 @@ namespace App.Controllers.Apis
         }
 
         [HttpPost("Register")]
-        public async Task<IActionResult> RegisterAsync(RegisterModel model)
+        public async Task<IActionResult> Register(RegisterModel model)
         {
-            var result = await _accountService.RegisterAsync(model);
-            if (result.Succeeded)
+            if (ModelState.IsValid)
             {
-                return Ok(result.Succeeded);
+                var result = await _accountService.RegisterAsync(model);
+                if (result.Succeeded)
+                {
+                    return Ok(result.Succeeded);
+                }
             }
 
             return Unauthorized();
         }
 
         [HttpPost("Login")]
-        public async Task<IActionResult> LoginAsync(LoginModel model)
+        public async Task<IActionResult> Login(LoginModel model)
         {
-            var result = await _accountService.LoginAsync(model);
-            if (result.Success)
+            if (ModelState.IsValid)
             {
-                return Ok(result.Data);
+                var result = await _accountService.LoginAsync(model);
+                if (result.Success)
+                {
+                    result.StatusCode = 200;
+                    return Ok(result);
+                }
+            }
+            return Unauthorized();
+        }
+        [HttpPost("ForgotPassword")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var currentUrl = HttpContext.Request.Headers["X-Subdomain"].FirstOrDefault();
+                var result = await _accountService.ForgotPasswordAsync(model.Email!, currentUrl!);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+            }
+            return Unauthorized();
+        }
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.ResetPasswordAsync(model);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
             }
             return Unauthorized();
         }

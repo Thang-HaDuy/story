@@ -131,7 +131,7 @@ namespace back_end.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("episodes");
+                    b.ToTable("Episodes");
                 });
 
             modelBuilder.Entity("App.Areas.Management.Models.Movie", b =>
@@ -144,6 +144,12 @@ namespace back_end.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar");
 
+                    b.Property<string>("Avatar")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Background")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -154,9 +160,6 @@ namespace back_end.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar");
-
-                    b.Property<string>("FileName")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -172,7 +175,7 @@ namespace back_end.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("movies");
+                    b.ToTable("Movies");
                 });
 
             modelBuilder.Entity("App.Models.AppUser", b =>

@@ -12,7 +12,7 @@ namespace App.Areas.Management.Dtos
     {
         public string? Id { get; set; }
         public string? Name { get; set; }
-        public string? FileName { get; set; }
+        public string? Avatar { get; set; }
         public int CountEpisodes { get; set; }
         public int? CountViews { get; set; }
         public int? vote { get; set; }

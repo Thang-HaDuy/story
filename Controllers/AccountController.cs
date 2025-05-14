@@ -23,7 +23,7 @@ namespace App.Controllers
             _logger = logger;
         }
 
-       // GET: /Account/Login
+        // GET: /Account/Login
         [HttpGet("/Login/")]
         public IActionResult Login(string returnUrl = null)
         {
@@ -41,12 +41,12 @@ namespace App.Controllers
             ViewData["ReturnUrl"] = returnUrl;
             if (ModelState.IsValid)
             {
-                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, false, false);
+                var result = await _signInManager.PasswordSignInAsync(model.Email!, model.Password!, false, false);
                 if (result.Succeeded)
                 {
                     _logger.LogInformation(1, "User logged in.");
                     return LocalRedirect(returnUrl);
-                }                
+                }
                 if (result.IsLockedOut)
                 {
                     _logger.LogWarning(2, "Tài khoản bị khóa");
@@ -54,14 +54,14 @@ namespace App.Controllers
                 }
                 else
                 {
-                    ModelState.AddModelError("lỗi","Không đăng nhập được.");
+                    ModelState.AddModelError("lỗi", "Không đăng nhập được.");
                     return View(model);
                 }
             }
             return View(model);
         }
 
-        
+
         [Route("/khongduoctruycap.html/")]
         [AllowAnonymous]
         public IActionResult AccessDenied()

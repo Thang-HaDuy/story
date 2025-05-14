@@ -12,20 +12,14 @@ using X.PagedList;
 
 namespace App.Areas.Management.Services.MovieServices
 {
-    public class MovieService : IMovieService
+    public class MovieService(
+        IConfiguration configuration,
+        DataDbContext context
+        ) : IMovieService
     {
-        private readonly DataDbContext _context;
-        private readonly IConfiguration _configuration;
+        private readonly DataDbContext _context = context;
+        private readonly IConfiguration _configuration = configuration;
 
-        public MovieService
-        (
-            IConfiguration configuration,
-            DataDbContext context
-        )
-        {
-            _configuration = configuration;
-            _context = context;
-        }
         public async Task<ApiResponse> SearchAsync(string query, string? type, int? page, int? pagelimit)
         {
             IPagedList<MovieSearchDto> movies;
@@ -34,7 +28,7 @@ namespace App.Areas.Management.Services.MovieServices
                 var pageNumber = page ?? 1;
                 var pageSize = pagelimit ?? 30;
 
-                movies = await _context.movies
+                movies = await _context.Movies
                                     .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
                                     .Include(m => m.Ratings)
@@ -44,7 +38,7 @@ namespace App.Areas.Management.Services.MovieServices
                                         Id = m.Id,
                                         Name = m.Name,
                                         CountEpisodes = m.Episodes!.Count(),
-                                        FileName = m.FileName,
+                                        Avatar = m.Avatar,
                                         CountViews = m.views!.Count(),
                                         vote = m.Ratings!.Count(),
                                     })
@@ -52,7 +46,7 @@ namespace App.Areas.Management.Services.MovieServices
             }
             else
             {
-                movies = await _context.movies
+                movies = await _context.Movies
                                     .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
                                     .Select(m => new MovieSearchDto()
@@ -60,7 +54,7 @@ namespace App.Areas.Management.Services.MovieServices
                                         Id = m.Id,
                                         Name = m.Name,
                                         CountEpisodes = m.Episodes!.Count(),
-                                        FileName = m.FileName,
+                                        Avatar = m.Avatar,
                                     })
                                     .ToPagedListAsync(1, 5);
             }
@@ -84,6 +78,34 @@ namespace App.Areas.Management.Services.MovieServices
                 Success = true,
                 Data = Paginated.RenderObject(movies)
             };
+        }
+
+
+        public async Task<ApiResponse> MovieTopRatingAsync()
+        {
+            var result = new ApiResponse()
+            {
+                Error = true,
+                Message = "No data matching",
+                Success = false,
+                Data = null
+            };
+
+            var top10Movies = await _context.Movies
+                .Where(m => m.Ratings.Any())
+                .OrderByDescending(m => m.Ratings.Average(r => r.Rate) * Math.Log(m.Ratings.Count() + 1))
+                .Select(m => new
+                {
+                    averageRating = m.Ratings.Average(r => r.Rate),
+                    name = m.Name,
+                    avatar = m.Avatar,
+                    totalEpisode = m.Episodes.Count()
+                })
+                .Take(10)
+                .ToListAsync();
+
+            result.Data = top10Movies;
+            return result;
         }
     }
 }

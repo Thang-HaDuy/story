@@ -31,14 +31,12 @@ namespace App.Areas.Management.Models
         [StringLength(100)]
         public string? Author { get; set; }
 
-        [Display(Name = "Ảnh Chính")]
-        public string? FileName { get; set; }
+        [Display(Name = "Ảnh Đại Diện")]
+        public string? Avatar { get; set; }
 
-        [NotMapped]
-        [DataType(DataType.Upload)]
-        // [FileExtensions(Extensions = "png,jpg,jpeg,gif")]
-        [Display(Name = "Chọn file upload")]
-        public IFormFile? FileUpload { get; set; }
+        [Display(Name = "Ảnh Bìa")]
+        public string? Background { get; set; }
+
 
         [Required(ErrorMessage = "Phải nhập {0}")]
         [Display(Name = "Trạng Thái")]
@@ -51,10 +49,10 @@ namespace App.Areas.Management.Models
         [NotMapped]
         [Display(Name = "Chuyên mục")]
         public string[]? CategoryIDs { get; set; }
-        public ICollection<CategoryMovie>? CategoryMovie { get; set; }
-        public ICollection<Episode>? Episodes { get; set; }
-        public ICollection<Follow>? Follows { get; set; }
-        public ICollection<Rating>? Ratings { get; set; }
-        public ICollection<View>? views { get; set; }
+        public ICollection<CategoryMovie>? CategoryMovie { get; set; } = new List<CategoryMovie>();
+        public ICollection<Episode>? Episodes { get; set; } = new List<Episode>();
+        public ICollection<Follow>? Follows { get; set; } = new List<Follow>();
+        public ICollection<Rating>? Ratings { get; set; } = new List<Rating>();
+        public ICollection<View>? views { get; set; } = new List<View>();
     }
 }

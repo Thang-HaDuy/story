@@ -31,14 +31,14 @@
                 <span asp-validation-for="Author" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="FileName" class="control-label"></label>
-                <img src="\@Url.Content(Model.FileName)" alt="Ảnh truyện" class = "col-sm-10" />
+                <label asp-for="Avatar" class="control-label"></label>
+                <img src="\@Url.Content(Model.Avatar)" alt="Ảnh truyện" class = "col-sm-10" />
             </div>
-            <div class="form-group">
+            @* <div class="form-group">
                 <label asp-for="FileUpload"></label>
-                <input asp-for="FileUpload" value="@Url.Content(Model.FileName)"/>
+                <input asp-for="FileUpload" value="@Url.Content(Model.)"/>
                 <span asp-validation-for="FileUpload" class="text-danger"></span>
-            </div>
+            </div> *@
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <input asp-for="Status" class="form-control" />

@@ -11,7 +11,7 @@ namespace App.Areas.Management.Models
         public string? Id { get; set; }
 
         [Required(ErrorMessage = "Phải nhập {0}")]
-        public string Name { get; set; }
+        public string? Name { get; set; }
         [Required(ErrorMessage = "Phải nhập {0}")]
         public float Number { get; set; }
 

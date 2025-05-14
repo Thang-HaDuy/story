@@ -30,8 +30,8 @@ namespace back_end.Areas.Management.Controllers
             var pageNumber = page ?? 1;
             var pageSize = 10;
 
-            var result = await _context.episodes.Include(e => e.Movie).Where(e => e.Movie.Id == id).ToPagedListAsync(pageNumber, pageSize);
-            
+            var result = await _context.Episodes.Include(e => e.Movie).Where(e => e.Movie.Id == id).ToPagedListAsync(pageNumber, pageSize);
+
             ViewBag.episodeIndex = (pageNumber - 1) * pageSize;
             ViewBag.id = id;
             return View(result);
@@ -45,7 +45,7 @@ namespace back_end.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var episode = await _context.episodes
+            var episode = await _context.Episodes
                 .Include(e => e.Movie)
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (episode == null)
@@ -100,8 +100,8 @@ namespace back_end.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var episode = await _context.episodes.Include(e => e.Movie)
-                    .FirstOrDefaultAsync(m => m.Id == id);;
+            var episode = await _context.Episodes.Include(e => e.Movie)
+                    .FirstOrDefaultAsync(m => m.Id == id); ;
             if (episode == null)
             {
                 return NotFound();
@@ -120,7 +120,7 @@ namespace back_end.Areas.Management.Controllers
         {
             if (id == null) return NotFound();
 
-            var episode = await _context.episodes.Include(e => e.Movie).FirstOrDefaultAsync(e => e.Id == id);
+            var episode = await _context.Episodes.Include(e => e.Movie).FirstOrDefaultAsync(e => e.Id == id);
 
             if (episode == null) return NotFound();
 
@@ -132,7 +132,7 @@ namespace back_end.Areas.Management.Controllers
 
                 _context.Update(episode);
                 await _context.SaveChangesAsync();
-            
+
                 return RedirectToAction("Index", new { id = episode.MovieId });
             }
 
@@ -140,7 +140,7 @@ namespace back_end.Areas.Management.Controllers
             return View(model);
         }
 
-      // GET: Story/Delete/5
+        // GET: Story/Delete/5
         public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
@@ -148,7 +148,7 @@ namespace back_end.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var episode = await _context.episodes.Include(e => e.Movie).FirstOrDefaultAsync(c => c.Id == id);
+            var episode = await _context.Episodes.Include(e => e.Movie).FirstOrDefaultAsync(c => c.Id == id);
             if (episode != null)
             {
                 episode.DeletedAt = DateTime.UtcNow;
@@ -166,7 +166,7 @@ namespace back_end.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var episode = await _context.episodes.Include(e => e.Movie).FirstOrDefaultAsync(c => c.Id == id);
+            var episode = await _context.Episodes.Include(e => e.Movie).FirstOrDefaultAsync(c => c.Id == id);
             if (episode != null)
             {
                 episode.DeletedAt = null;
@@ -178,7 +178,7 @@ namespace back_end.Areas.Management.Controllers
 
         private bool EpisodeExists(string id)
         {
-            return _context.episodes.Any(e => e.Id == id);
+            return _context.Episodes.Any(e => e.Id == id);
         }
     }
 }

@@ -7,28 +7,23 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using App.Utilities;
 using Microsoft.EntityFrameworkCore.Update.Internal;
+using App.Areas.Management.Models.ViewModels;
 
 namespace App.Areas.Management.Controllers
 {
     [Area("Management")]
     [Route("[controller]/[action]")]
-    public class MovieController : Controller
+    public class MovieController(DataDbContext context, IWebHostEnvironment webHostEnvironment) : Controller
     {
-        private readonly DataDbContext _context;
-        private readonly IWebHostEnvironment _webHostEnvironment;
-
-        public MovieController(DataDbContext context, IWebHostEnvironment webHostEnvironment)
-        {
-            _context = context;
-            _webHostEnvironment = webHostEnvironment;
-        }
+        private readonly DataDbContext _context = context;
+        private readonly IWebHostEnvironment _webHostEnvironment = webHostEnvironment;
 
         // GET: Story
         public async Task<IActionResult> Index(int? page)
         {
             var pageNumber = page ?? 1;
             var pageSize = 10;
-            var model = await _context.movies.ToPagedListAsync(pageNumber,pageSize);
+            var model = await _context.Movies.ToPagedListAsync(pageNumber, pageSize);
 
             ViewBag.movieIndex = (pageNumber - 1) * pageSize;
             return View(model);
@@ -39,7 +34,7 @@ namespace App.Areas.Management.Controllers
         {
             if (id != null)
             {
-                var movie = await _context.movies
+                var movie = await _context.Movies
                     .Include(s => s.Episodes)
                     .Include(p => p.CategoryMovie)
                     .ThenInclude(c => c.Category)
@@ -53,10 +48,8 @@ namespace App.Areas.Management.Controllers
                     ViewData["categories"] = Categorys;
                     return View(movie);
                 }
-                return NotFound();
             }
             return NotFound();
-
         }
         //  GET: Story/Create
         public async Task<IActionResult> Create()
@@ -72,7 +65,7 @@ namespace App.Areas.Management.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,Description,Author,FileUpload,Status,CategoryIDs")] Movie model)
+        public async Task<IActionResult> Create(MovieViewModel model)
         {
             //load categories
             var categories = await _context.Categories.ToListAsync();
@@ -80,21 +73,33 @@ namespace App.Areas.Management.Controllers
 
             if (ModelState.IsValid)
             {
-                model.Id = Guid.NewGuid().ToString();
-                model.CreatedAt = DateTime.UtcNow;
-                model.UpdatedAt = DateTime.UtcNow;
-                if (model.FileUpload != null && model.FileUpload.Length > 0) model.FileName = await UploadImage.UploadImageAsync("Image", "Movie" , model.FileUpload);
-                _context.Add(model);
+                var movie = new Movie()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = model.Name,
+                    Description = model.Description,
+                    Author = model.Author,
+                    Status = model.Status,
+                    CreatedAt = DateTime.UtcNow,
+                };
+
+                if (model.FileAvatar != null && model.FileAvatar.Length > 0)
+                    movie.Avatar = await UploadImage.UploadImageAsync("Image", "Movie", model.FileAvatar!);
+
+                if (model.FileBackground != null && model.FileBackground.Length > 0)
+                    movie.Background = await UploadImage.UploadImageAsync("Image", "Movie", model.FileBackground!);
+
+                _context.Add(movie);
 
                 //Add CategoryStory
-                if (model.CategoryIDs != null)
+                if (movie.CategoryIDs != null)
                 {
-                    foreach (var CateId in model.CategoryIDs)
+                    foreach (var CateId in movie.CategoryIDs)
                     {
                         _context.Add(new CategoryMovie()
                         {
                             CategoryId = CateId,
-                            Movie = model
+                            Movie = movie
                         });
                     }
                 }
@@ -102,7 +107,7 @@ namespace App.Areas.Management.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            
+
             return View(model);
         }
 
@@ -119,7 +124,7 @@ namespace App.Areas.Management.Controllers
             var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
             ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategorys);
 
-            var movie = await _context.movies.FindAsync(id);
+            var movie = await _context.Movies.FindAsync(id);
             if (movie == null)
             {
                 return NotFound();
@@ -130,57 +135,57 @@ namespace App.Areas.Management.Controllers
         //  POST: Story/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("Name,Description,Author,Status,FileUpload,CategoryIDs")] Movie model)
-        {
-            if (ModelState.IsValid)
-            {
-                var movie = _context.movies.Find(id);
-                if (movie == null)
-                {
-                    return NotFound();
-                }
+        // [HttpPost]
+        // [ValidateAntiForgeryToken]
+        // public async Task<IActionResult> Edit(string id, [Bind("Name,Description,Author,Status,FileUpload,CategoryIDs")] Movie model)
+        // {
+        //     if (ModelState.IsValid)
+        //     {
+        //         var movie = _context.Movies.Find(id);
+        //         if (movie == null)
+        //         {
+        //             return NotFound();
+        //         }
 
-                //remove CategoryStory old
-                var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).ToListAsync();
-                _context.CategoryMovie.RemoveRange(listCategorys);
-                
-                //Add CategoryStory new
-                if (model.CategoryIDs != null)
-                {
-                    foreach (var CateId in model.CategoryIDs)
-                    {
-                        _context.Add(new CategoryMovie()
-                        {
-                            CategoryId = CateId,
-                            MovieId = id
-                        });
-                    }
-                }
+        //         //remove CategoryStory old
+        //         var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).ToListAsync();
+        //         _context.CategoryMovie.RemoveRange(listCategorys);
 
-                // Update image if changed
-                if (model.FileUpload != null && model.FileUpload.Length > 0) movie.FileName = await UploadImage.UploadImageAsync("Image", "movie", model.FileUpload);
+        //         //Add CategoryStory new
+        //         if (model.CategoryIDs != null)
+        //         {
+        //             foreach (var CateId in model.CategoryIDs)
+        //             {
+        //                 _context.Add(new CategoryMovie()
+        //                 {
+        //                     CategoryId = CateId,
+        //                     MovieId = id
+        //                 });
+        //             }
+        //         }
 
-                movie.Author = model.Author;
-                movie.Name = model.Name;
-                movie.Description = model.Description;
-                movie.Status = model.Status;
-                movie.UpdatedAt = DateTime.UtcNow;
-                movie.DeletedAt = model.DeletedAt;
+        //         // Update image if changed
+        //         if (model.FileUpload != null && model.FileUpload.Length > 0) movie.FileName = await UploadImage.UploadImageAsync("Image", "movie", model.FileUpload);
 
-                _context.movies.Update(movie);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            
-            //load categories
-            var categories = await _context.Categories.ToListAsync();
-            var listCategoryActive = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
-            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategoryActive);
+        //         movie.Author = model.Author;
+        //         movie.Name = model.Name;
+        //         movie.Description = model.Description;
+        //         movie.Status = model.Status;
+        //         movie.UpdatedAt = DateTime.UtcNow;
+        //         movie.DeletedAt = model.DeletedAt;
 
-            return View(model);
-        }
+        //         _context.Movies.Update(movie);
+        //         await _context.SaveChangesAsync();
+        //         return RedirectToAction(nameof(Index));
+        //     }
+
+        //     //load categories
+        //     var categories = await _context.Categories.ToListAsync();
+        //     var listCategoryActive = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
+        //     ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategoryActive);
+
+        //     return View(model);
+        // }
 
         // GET: Story/Delete/5
         public async Task<IActionResult> Delete(string id)
@@ -190,7 +195,7 @@ namespace App.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.movies.FirstOrDefaultAsync(c => c.Id == id);
+            var movie = await _context.Movies.FirstOrDefaultAsync(c => c.Id == id);
             if (movie != null)
             {
                 movie.DeletedAt = DateTime.UtcNow;
@@ -208,7 +213,7 @@ namespace App.Areas.Management.Controllers
                 return NotFound();
             }
 
-            var movie = await _context.movies.FirstOrDefaultAsync(c => c.Id == id);
+            var movie = await _context.Movies.FirstOrDefaultAsync(c => c.Id == id);
             if (movie != null)
             {
                 movie.DeletedAt = null;

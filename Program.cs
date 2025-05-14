@@ -4,7 +4,9 @@ using App.Areas.Management.Services.MovieServices;
 using App.Areas.Panel.Menu;
 using App.Data;
 using App.Models;
+using App.Services;
 using App.Services.AccountService;
+using App.Utilities;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -88,6 +90,8 @@ builder.Services.AddScoped<IMovieService, MovieService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddTransient<IActionContextAccessor, ActionContextAccessor>();
 builder.Services.AddTransient<AdminSidebarService>();
+builder.Services.AddTransient<EmailService>();
+builder.Services.AddTransient<Helper>();
 
 builder.Services.AddCors(options =>
 {

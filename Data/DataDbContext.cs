@@ -7,13 +7,8 @@ using App.Areas.Management.Models;
 
 namespace App.Data
 {
-    public class DataDbContext : IdentityDbContext<AppUser>
+    public class DataDbContext(DbContextOptions<DataDbContext> options) : IdentityDbContext<AppUser>(options)
     {
-
-        public DataDbContext(DbContextOptions<DataDbContext> options) : base(options)
-        {
-
-        }
         protected override void OnConfiguring(DbContextOptionsBuilder builder)
         {
             base.OnConfiguring(builder);
@@ -56,8 +51,8 @@ namespace App.Data
         }
 
         public DbSet<Category> Categories { get; set; }
-        public DbSet<Episode> episodes { get; set; }
-        public DbSet<Movie> movies { get; set; }
+        public DbSet<Episode> Episodes { get; set; }
+        public DbSet<Movie> Movies { get; set; }
         public DbSet<CategoryMovie> CategoryMovie { get; set; }
         public DbSet<Follow> Follows { get; set; }
         public DbSet<Rating> Ratings { get; set; }

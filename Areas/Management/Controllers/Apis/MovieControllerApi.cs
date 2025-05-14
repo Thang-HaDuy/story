@@ -10,25 +10,30 @@ namespace App.Areas.Management.Controllers.Apis
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MovieControllerApi : ControllerBase
+    public class MovieControllerApi(IMovieService MovieService) : ControllerBase
     {
-        private readonly IMovieService _movieService;
-
-        public MovieControllerApi(IMovieService MovieService)
-        {
-            _movieService = MovieService;
-        }
+        private readonly IMovieService _movieService = MovieService;
 
         [HttpGet("search")]
         public async Task<IActionResult> SearchAsync(string query, string? type, int? page, int? pagesite)
         {
             var result = await _movieService.SearchAsync(query, type, page, pagesite);
 
-            if (result.Error == true) return NotFound();
+            if (result.Success != true) return NotFound();
 
             if (result.Data == null) return NoContent();
 
             return Ok(result.Data);
         }
+
+        [HttpGet("MovieTopRating")]
+        public async Task<IActionResult> MovieTopRating()
+        {
+            var result = await _movieService.MovieTopRatingAsync();
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+
     }
 }
