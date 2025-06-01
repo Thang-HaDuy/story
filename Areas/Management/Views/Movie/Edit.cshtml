@@ -1,4 +1,4 @@
-@model Movie
+@model MovieUpdateViewModel
 
 @{
     ViewData["Title"] = "Chỉnh Sửa";
@@ -31,14 +31,15 @@
                 <span asp-validation-for="Author" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Avatar" class="control-label"></label>
-                <img src="\@Url.Content(Model.Avatar)" alt="Ảnh truyện" class = "col-sm-10" />
+                <label asp-for="FileAvatar"></label>
+                <input asp-for="FileAvatar"/>
+                <span asp-validation-for="FileAvatar" class="text-danger"></span>
             </div>
-            @* <div class="form-group">
-                <label asp-for="FileUpload"></label>
-                <input asp-for="FileUpload" value="@Url.Content(Model.)"/>
-                <span asp-validation-for="FileUpload" class="text-danger"></span>
-            </div> *@
+            <div class="form-group">
+                <label asp-for="FileBackground"></label>
+                <input asp-for="FileBackground"/>
+                <span asp-validation-for="FileBackground" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <input asp-for="Status" class="form-control" />

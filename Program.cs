@@ -1,5 +1,6 @@
 using System.Reflection;
 using System.Text;
+using System.Text.Json;
 using App.Areas.Management.Services.MovieServices;
 using App.Areas.Panel.Menu;
 using App.Data;
@@ -45,7 +46,7 @@ builder.Services.AddSwaggerGen(options =>
     options.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
     options.DocInclusionPredicate((docName, apiDesc) =>
     {
-        if (!apiDesc.TryGetMethodInfo(out MethodInfo methodInfo)) return false;
+        if (!apiDesc.TryGetMethodInfo(out var methodInfo)) return false;
         var controller = methodInfo.DeclaringType;
         if (controller == null) return false;
         return controller.GetCustomAttributes<ApiControllerAttribute>().Any();
@@ -103,6 +104,12 @@ builder.Services.AddCors(options =>
     });
 });
 
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
+    });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -132,6 +139,30 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Admin}/{action=Index}/"
 );
+
+app.MapGet("/video", async (string id, IWebHostEnvironment _hostenvironment, DataDbContext dbContext) =>
+{
+    // Lấy video từ database
+    var video = await dbContext.Episodes.FirstOrDefaultAsync(v => v.Id == id);
+    if (video == null || string.IsNullOrEmpty(video.FileName))
+        return Results.NotFound();
+
+    // Xây dựng đường dẫn đầy đủ
+    var path = Path.Combine(_hostenvironment.WebRootPath, video.FileName);
+
+    // Kiểm tra file tồn tại
+    if (!File.Exists(path))
+        return Results.NotFound();
+
+    // Mở file stream
+    using var filestream = File.OpenRead(path);
+
+    // Lấy tên file
+    var filename = Path.GetFileName(path);
+
+    // Trả về file video
+    return Results.File(filestream, contentType: "video/mp4", fileDownloadName: filename, enableRangeProcessing: true);
+});
 
 
 app.Run();

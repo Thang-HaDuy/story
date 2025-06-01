@@ -10,6 +10,8 @@ namespace App.Services.AccountService
         public Task<ApiResponse> LoginAsync(LoginModel model);
         public Task<ApiResponse> ForgotPasswordAsync(string email, string domain);
         public Task<ApiResponse> ResetPasswordAsync(ResetPasswordViewModel model);
+        public Task<ApiResponse> GetUserDetail(string id);
+        public Task<ApiResponse> UpdateUser(string id, UpdateUserModel model);
         // public Task<ApiResponse> RefreshAsync(TokenModel model);
         // public Task<ApiResponse> RevokeAsync(string username, string TokenId);
     }

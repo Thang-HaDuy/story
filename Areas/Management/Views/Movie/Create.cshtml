@@ -1,4 +1,4 @@
-@model Movie
+@model MovieViewModel
 
 @{
     ViewData["Title"] = "Thêm Truyện mới";
@@ -21,7 +21,7 @@
             </div>
             <div class="form-group">
                 <label asp-for="Description" class="control-label"></label>
-                <input asp-for="Description" class="form-control" />
+                <textarea asp-for="Description" class="form-control"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
             </div>
             <div class="form-group">
@@ -29,11 +29,16 @@
                 <input asp-for="Author" class="form-control" />
                 <span asp-validation-for="Author" class="text-danger"></span>
             </div>
-            @* <div class="form-group">
-                <label asp-for="FileUpload"></label>
-                <input asp-for="FileUpload"/>
-                <span asp-validation-for="FileUpload" class="text-danger"></span>
-            </div> *@
+            <div class="form-group">
+                <label asp-for="FileAvatar"></label>
+                <input asp-for="FileAvatar"/>
+                <span asp-validation-for="FileAvatar" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="FileBackground"></label>
+                <input asp-for="FileBackground"/>
+                <span asp-validation-for="FileBackground" class="text-danger"></span>
+            </div>
             <div class="form-group">
                 <label asp-for="Status" class="control-label"></label>
                 <input asp-for="Status" class="form-control" />

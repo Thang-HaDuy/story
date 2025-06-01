@@ -4,14 +4,14 @@ namespace App.Areas.Management.Models
 {
     public class CategoryMovie
     {
-        public string CategoryId { get; set; }
-        public string MovieId { get; set; }
+        public string? CategoryId { get; set; }
+        public string? MovieId { get; set; }
 
         [ForeignKey("CategoryId")]
-        public Category Category { get; set; }
+        public Category Category { get; set; } = new Category();
 
         [ForeignKey("MovieId")]
-        public Movie Movie { get; set; }
+        public Movie Movie { get; set; } = new Movie();
 
     }
 }

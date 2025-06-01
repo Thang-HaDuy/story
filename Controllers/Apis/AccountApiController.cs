@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using App.Models;
 using App.Models.ViewModels;
 using App.Services.AccountService;
@@ -7,14 +8,9 @@ namespace App.Controllers.Apis
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class AccountControllerApi : ControllerBase
+    public class AccountApiController(IAccountService AccountService) : ControllerBase
     {
-        private readonly IAccountService _accountService;
-
-        public AccountControllerApi(IAccountService AccountService)
-        {
-            _accountService = AccountService;
-        }
+        private readonly IAccountService _accountService = AccountService;
 
         [HttpPost("Register")]
         public async Task<IActionResult> Register(RegisterModel model)
@@ -67,6 +63,38 @@ namespace App.Controllers.Apis
             if (ModelState.IsValid)
             {
                 var result = await _accountService.ResetPasswordAsync(model);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+            }
+            return Unauthorized();
+        }
+
+        [HttpGet("UserDetail")]
+        public async Task<IActionResult> GetUserDetail()
+        {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await _accountService.GetUserDetail(userId!);
+                if (result.Success)
+                {
+                    return Ok(result);
+                }
+            }
+            return Unauthorized();
+        }
+
+
+        [HttpPut("UpdateUser")]
+        public async Task<IActionResult> UpdateUser([FromForm] UpdateUserModel model)
+        {
+            Console.WriteLine(model.Avatar);
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+                var result = await _accountService.UpdateUser(userId!, model);
                 if (result.Success)
                 {
                     return Ok(result);

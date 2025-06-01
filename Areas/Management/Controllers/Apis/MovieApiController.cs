@@ -10,7 +10,7 @@ namespace App.Areas.Management.Controllers.Apis
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class MovieControllerApi(IMovieService MovieService) : ControllerBase
+    public class MovieApiController(IMovieService MovieService) : ControllerBase
     {
         private readonly IMovieService _movieService = MovieService;
 

@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using App.Utilities;
 using Microsoft.EntityFrameworkCore.Update.Internal;
 using App.Areas.Management.Models.ViewModels;
+using Microsoft.IdentityModel.Tokens;
 
 namespace App.Areas.Management.Controllers
 {
@@ -90,6 +91,7 @@ namespace App.Areas.Management.Controllers
                     movie.Background = await UploadImage.UploadImageAsync("Image", "Movie", model.FileBackground!);
 
                 _context.Add(movie);
+                Console.WriteLine(movie.CategoryIDs);
 
                 //Add CategoryStory
                 if (movie.CategoryIDs != null)
@@ -119,73 +121,95 @@ namespace App.Areas.Management.Controllers
                 return NotFound();
             }
 
-            //load categories
-            var categories = await _context.Categories.ToListAsync();
-            var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
-            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategorys);
-
             var movie = await _context.Movies.FindAsync(id);
             if (movie == null)
             {
                 return NotFound();
             }
-            return View(movie);
+            //load categories
+            var categories = await _context.Categories.ToListAsync();
+            var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
+            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategorys);
+
+            return View(new MovieUpdateViewModel()
+            {
+                CategoryIDs = movie.CategoryIDs,
+                Author = movie.Author,
+                Description = movie.Description,
+                Name = movie.Name,
+                Status = movie.Status,
+            });
         }
 
         //  POST: Story/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        // [HttpPost]
-        // [ValidateAntiForgeryToken]
-        // public async Task<IActionResult> Edit(string id, [Bind("Name,Description,Author,Status,FileUpload,CategoryIDs")] Movie model)
-        // {
-        //     if (ModelState.IsValid)
-        //     {
-        //         var movie = _context.Movies.Find(id);
-        //         if (movie == null)
-        //         {
-        //             return NotFound();
-        //         }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(string id, MovieUpdateViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // Lặp qua tất cả lỗi trong ModelState
+                foreach (var modelState in ModelState)
+                {
+                    var fieldName = modelState.Key; // Tên thuộc tính (ví dụ: "Title", "Description")
+                    foreach (var error in modelState.Value.Errors)
+                    {
+                        Console.WriteLine($"Field: {fieldName}, Error: {error.ErrorMessage}");
+                    }
+                }
+                return BadRequest(ModelState);
+            }
+            if (ModelState.IsValid)
+            {
+                var movie = _context.Movies.Find(id);
+                if (movie == null)
+                {
+                    return NotFound();
+                }
 
-        //         //remove CategoryStory old
-        //         var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).ToListAsync();
-        //         _context.CategoryMovie.RemoveRange(listCategorys);
+                //remove CategoryStory old
+                var listCategorys = await _context.CategoryMovie.Where(c => c.MovieId == id).ToListAsync();
+                _context.CategoryMovie.RemoveRange(listCategorys);
 
-        //         //Add CategoryStory new
-        //         if (model.CategoryIDs != null)
-        //         {
-        //             foreach (var CateId in model.CategoryIDs)
-        //             {
-        //                 _context.Add(new CategoryMovie()
-        //                 {
-        //                     CategoryId = CateId,
-        //                     MovieId = id
-        //                 });
-        //             }
-        //         }
+                // //Add CategoryStory new
+                // if (!model.CategoryIDs.IsNullOrEmpty())
+                // {
+                //     foreach (var CateId in model.CategoryIDs)
+                //     {
+                //         _context.Add(new CategoryMovie()
+                //         {
+                //             CategoryId = CateId,
+                //             MovieId = id
+                //         });
+                //     }
+                // }
 
-        //         // Update image if changed
-        //         if (model.FileUpload != null && model.FileUpload.Length > 0) movie.FileName = await UploadImage.UploadImageAsync("Image", "movie", model.FileUpload);
+                if (model.FileAvatar != null && model.FileAvatar.Length > 0)
+                    movie.Avatar = await UploadImage.UploadImageAsync("Image", "Movie", model.FileAvatar!);
 
-        //         movie.Author = model.Author;
-        //         movie.Name = model.Name;
-        //         movie.Description = model.Description;
-        //         movie.Status = model.Status;
-        //         movie.UpdatedAt = DateTime.UtcNow;
-        //         movie.DeletedAt = model.DeletedAt;
+                if (model.FileBackground != null && model.FileBackground.Length > 0)
+                    movie.Background = await UploadImage.UploadImageAsync("Image", "Movie", model.FileBackground!);
 
-        //         _context.Movies.Update(movie);
-        //         await _context.SaveChangesAsync();
-        //         return RedirectToAction(nameof(Index));
-        //     }
+                movie.Author = model.Author;
+                movie.Name = model.Name;
+                movie.Description = model.Description;
+                movie.Status = model.Status;
+                movie.UpdatedAt = DateTime.UtcNow;
 
-        //     //load categories
-        //     var categories = await _context.Categories.ToListAsync();
-        //     var listCategoryActive = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
-        //     ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategoryActive);
+                _context.Movies.Update(movie);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
 
-        //     return View(model);
-        // }
+            //load categories
+            var categories = await _context.Categories.ToListAsync();
+            var listCategoryActive = await _context.CategoryMovie.Where(c => c.MovieId == id).Select(c => c.CategoryId).ToListAsync();
+            ViewData["categories"] = new MultiSelectList(categories, "Id", "Name", listCategoryActive);
+
+            return View(model);
+        }
 
         // GET: Story/Delete/5
         public async Task<IActionResult> Delete(string id)

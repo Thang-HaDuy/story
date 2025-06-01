@@ -1,10 +1,12 @@
 using System.ComponentModel.DataAnnotations;
 using App.Areas.Action.Models;
+using App.Utilities;
 
 namespace App.Areas.Management.Models.ViewModels
 {
     public class MovieViewModel
     {
+        public string[] CategoryIDs { get; set; } = [];
 
         [Display(Name = "Tên Truyện")]
         [Required(ErrorMessage = "Phải nhập {0}")]
@@ -19,13 +21,13 @@ namespace App.Areas.Management.Models.ViewModels
         public string? Author { get; set; }
 
         [DataType(DataType.Upload)]
-        [FileExtensions(Extensions = ".png,.jpg,.jpeg,.gif")]
-        [Display(Name = "Chọn file upload")]
+        [AllowedExtensions(new string[] { ".jpg", ".png", ".gif", ".pdf", ".webp" }, ErrorMessage = "Only jpg, png, gif, webp, and pdf files are allowed.")]
+        [Display(Name = "Thêm Avatar")]
         public IFormFile? FileAvatar { get; set; }
 
         [DataType(DataType.Upload)]
-        [FileExtensions(Extensions = ".png,.jpg,.jpeg,.gif")]
-        [Display(Name = "Chọn file upload")]
+        [AllowedExtensions(new string[] { ".jpg", ".png", ".gif", ".pdf", ".webp" }, ErrorMessage = "Only jpg, png, gif, webp, and pdf files are allowed.")]
+        [Display(Name = "Thêm Background")]
         public IFormFile? FileBackground { get; set; }
 
         [Required(ErrorMessage = "Phải nhập {0}")]

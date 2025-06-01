@@ -1,16 +1,8 @@
-using App.Data;
 using App.Models;
-
-using System.Text;
-using System.Security.Claims;
-using System.Security.Cryptography;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
 using App.Models.ViewModels;
-using App.Utilities;
 using System.Text.Encodings.Web;
+using App.Utilities;
 
 namespace App.Services.AccountService
 {
@@ -50,7 +42,7 @@ namespace App.Services.AccountService
                 };
             }
 
-            string token = _iJwtService.GenerateToken(user);
+            var token = _iJwtService.GenerateToken(user);
 
             return new ApiResponse()
             {
@@ -73,7 +65,8 @@ namespace App.Services.AccountService
             var user = new AppUser
             {
                 Email = model.Email,
-                UserName = model.UserName
+                UserName = model.UserName,
+                CreatedAt = DateTime.UtcNow
             };
 
             return await _userManager.CreateAsync(user, model.Password!);
@@ -121,7 +114,6 @@ namespace App.Services.AccountService
             };
 
             var user = await _userManager.FindByEmailAsync(model.Email!);
-            Console.WriteLine('1');
             if (user == null)
             {
                 result.Success = false;
@@ -130,19 +122,109 @@ namespace App.Services.AccountService
 
             var res = await _userManager.ResetPasswordAsync(user, model.Token!, model.Password!);
 
-            foreach (var error in res.Errors)
-            {
-                Console.WriteLine($"Code: {error.Code}, Description: {error.Description}");
-            }
             if (!res.Succeeded)
             {
                 result.Success = false;
                 return result;
             }
-            Console.WriteLine('3');
+            return result;
+        }
+
+        public async Task<ApiResponse> GetUserDetail(string id)
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = { }
+            };
+
+            if (id == null)
+            {
+                result.Success = false;
+                return result;
+            }
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                result.Success = false;
+                return result;
+            }
+
+            result.Data = new UserDetailViewModel()
+            {
+                Avatar = user.Avatar,
+                CreatedAt = user.CreatedAt?.ToString("dd/MM/yyyy") ?? string.Empty,
+                Email = user.Email,
+                Gender = user.Gender,
+                UserName = user.UserName
+            };
             return result;
         }
 
 
+        public async Task<ApiResponse> UpdateUser(string id, UpdateUserModel model)
+        {
+            var result = new ApiResponse
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                result.Success = false;
+                result.Error = true;
+                result.Message = "User not found.";
+                return result;
+            }
+
+            bool hasChanges = false;
+
+            if (user.Gender != model.Gender)
+            {
+                user.Gender = model.Gender;
+                hasChanges = true;
+            }
+
+            if (!string.IsNullOrEmpty(model.Password))
+            {
+                var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetResult = await _userManager.ResetPasswordAsync(user, token, model.Password!);
+                if (!resetResult.Succeeded)
+                {
+                    result.Success = false;
+                    result.Error = true;
+                    result.Message = string.Join(", ", resetResult.Errors.Select(e => e.Description));
+                    return result;
+                }
+                hasChanges = true;
+            }
+            if (model.Avatar != null && model.Avatar.Length > 0)
+            {
+                user.Avatar = await UploadImage.UploadImageAsync("Image", "User", model.Avatar);
+                hasChanges = true;
+            }
+
+            if (hasChanges)
+            {
+                var updateResult = await _userManager.UpdateAsync(user);
+                if (!updateResult.Succeeded)
+                {
+                    result.Success = false;
+                    result.Error = true;
+                    result.Message = string.Join(", ", updateResult.Errors.Select(e => e.Description));
+                    return result;
+                }
+            }
+
+            result.Message = "Cập nhật thành công.";
+            return result;
+        }
     }
 }

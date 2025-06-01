@@ -1,9 +1,5 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 using App.Areas.Action.Models;
 
 namespace App.Areas.Management.Models
@@ -21,8 +17,7 @@ namespace App.Areas.Management.Models
 
         [Display(Name = "Mô Tả")]
         [Required(ErrorMessage = "Phải nhập {0}")]
-        [Column(TypeName = "nvarchar")]
-        [StringLength(100)]
+        [Column(TypeName = "text")]
         public string? Description { get; set; }
 
         [Display(Name = "Tác Giả")]
@@ -48,11 +43,11 @@ namespace App.Areas.Management.Models
 
         [NotMapped]
         [Display(Name = "Chuyên mục")]
-        public string[]? CategoryIDs { get; set; }
-        public ICollection<CategoryMovie>? CategoryMovie { get; set; } = new List<CategoryMovie>();
-        public ICollection<Episode>? Episodes { get; set; } = new List<Episode>();
-        public ICollection<Follow>? Follows { get; set; } = new List<Follow>();
-        public ICollection<Rating>? Ratings { get; set; } = new List<Rating>();
-        public ICollection<View>? views { get; set; } = new List<View>();
+        public string[] CategoryIDs { get; set; } = [];
+        public ICollection<CategoryMovie> CategoryMovie { get; set; } = [];
+        public ICollection<Episode> Episodes { get; set; } = [];
+        public ICollection<Follow> Follows { get; set; } = [];
+        public ICollection<Rating> Ratings { get; set; } = [];
+        public ICollection<View> Views { get; set; } = [];
     }
 }

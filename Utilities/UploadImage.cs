@@ -9,16 +9,16 @@ namespace App.Utilities
     {
         public static async Task<string> UploadImageAsync(string TypeParent, string FolderParent, IFormFile FileUpload)
         {
-            string year = DateTime.Now.Year.ToString();
-            string month = DateTime.Now.Month.ToString();
-            string day = DateTime.Now.Day.ToString();
+            var year = DateTime.Now.Year.ToString();
+            var month = DateTime.Now.Month.ToString();
+            var day = DateTime.Now.Day.ToString();
 
-            string nameFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + Path.GetExtension(FileUpload.FileName);
+            var nameFile = Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + Path.GetExtension(FileUpload.FileName);
 
-            string pathFile = Path.Combine("Uploads", TypeParent, FolderParent, year, month, day);
-            string linkFile = Path.Combine(pathFile, nameFile);
-            string folderPath = Path.Combine("wwwroot", pathFile);
-            string file = Path.Combine(folderPath, nameFile);
+            var pathFile = Path.Combine("Uploads", TypeParent, FolderParent, year, month, day);
+            var linkFile = Path.Combine(pathFile, nameFile);
+            var folderPath = Path.Combine("wwwroot", pathFile);
+            var file = Path.Combine(folderPath, nameFile);
 
             if (!Directory.Exists(folderPath))
             {

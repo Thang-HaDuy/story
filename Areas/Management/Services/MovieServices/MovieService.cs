@@ -32,14 +32,14 @@ namespace App.Areas.Management.Services.MovieServices
                                     .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
                                     .Include(m => m.Ratings)
-                                    .Include(m => m.views)
+                                    .Include(m => m.Views)
                                     .Select(m => new MovieSearchDto()
                                     {
                                         Id = m.Id,
                                         Name = m.Name,
                                         CountEpisodes = m.Episodes!.Count(),
                                         Avatar = m.Avatar,
-                                        CountViews = m.views!.Count(),
+                                        CountViews = m.Views!.Count(),
                                         vote = m.Ratings!.Count(),
                                     })
                                     .ToPagedListAsync(pageNumber, pageSize);
