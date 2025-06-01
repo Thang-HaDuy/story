@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,21 +9,16 @@ using Microsoft.EntityFrameworkCore;
 using App.Areas.Management.Models;
 using App.Data;
 using X.PagedList;
-using Microsoft.Extensions.Hosting;
 using App.Utilities;
 
-namespace back_end.Areas.Management.Controllers
+namespace App.Areas.Management.Controllers
 {
     [Area("Management")]
     [Route("[controller]/[action]")]
-    public class EpisodeController : Controller
+    public class EpisodeController(DataDbContext context, IWebHostEnvironment hostenvironment) : Controller
     {
-        private readonly DataDbContext _context;
-
-        public EpisodeController(DataDbContext context)
-        {
-            _context = context;
-        }
+        private readonly DataDbContext _context = context;
+        private readonly IWebHostEnvironment _hostenvironment = hostenvironment;
 
         // GET: Management/Episode
         public async Task<IActionResult> Index(string id, int? page)
@@ -179,6 +175,24 @@ namespace back_end.Areas.Management.Controllers
         private bool EpisodeExists(string id)
         {
             return _context.Episodes.Any(e => e.Id == id);
+        }
+
+        [HttpGet("{episodeId}")]
+        public async Task<IActionResult> StreamVideo(string episodeId)
+        {
+            var video = await _context.Episodes.FirstOrDefaultAsync(v => v.Id == episodeId);
+            if (video == null || string.IsNullOrEmpty(video.FileName))
+                return NotFound();
+
+            // Xây dựng đường dẫn đầy đủ
+            var path = Path.Combine(_hostenvironment.WebRootPath, video.FileName);
+
+            // Kiểm tra file tồn tại
+            if (!System.IO.File.Exists(path))
+                return NotFound();
+
+            var stream = new FileStream(path, FileMode.Open, FileAccess.Read);
+            return File(stream, "video/mp4", enableRangeProcessing: true);
         }
     }
 }

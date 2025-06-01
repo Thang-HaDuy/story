@@ -140,30 +140,6 @@ app.MapControllerRoute(
     pattern: "{controller=Admin}/{action=Index}/"
 );
 
-app.MapGet("/video", async (string id, IWebHostEnvironment _hostenvironment, DataDbContext dbContext) =>
-{
-    // Lấy video từ database
-    var video = await dbContext.Episodes.FirstOrDefaultAsync(v => v.Id == id);
-    if (video == null || string.IsNullOrEmpty(video.FileName))
-        return Results.NotFound();
-
-    // Xây dựng đường dẫn đầy đủ
-    var path = Path.Combine(_hostenvironment.WebRootPath, video.FileName);
-
-    // Kiểm tra file tồn tại
-    if (!File.Exists(path))
-        return Results.NotFound();
-
-    // Mở file stream
-    using var filestream = File.OpenRead(path);
-
-    // Lấy tên file
-    var filename = Path.GetFileName(path);
-
-    // Trả về file video
-    return Results.File(filestream, contentType: "video/mp4", fileDownloadName: filename, enableRangeProcessing: true);
-});
-
 
 app.Run();
 
