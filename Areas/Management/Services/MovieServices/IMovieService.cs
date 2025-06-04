@@ -10,5 +10,6 @@ namespace App.Areas.Management.Services.MovieServices
     {
         public Task<ApiResponse> SearchAsync(string query, string? type, int? page, int? pagesite);
         public Task<ApiResponse> MovieTopRatingAsync();
+        public Task<ApiResponse> MovieTopRatingExtendAsync();
     }
 }

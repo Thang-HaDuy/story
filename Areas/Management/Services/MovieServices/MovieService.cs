@@ -9,6 +9,7 @@ using App.Models.ViewModels;
 using App.Models;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
+using App.Areas.Management.Models.ViewModels;
 
 namespace App.Areas.Management.Services.MovieServices
 {
@@ -85,27 +86,64 @@ namespace App.Areas.Management.Services.MovieServices
         {
             var result = new ApiResponse()
             {
-                Error = true,
-                Message = "No data matching",
-                Success = false,
+                Error = false,
+                Message = "",
+                Success = true,
                 Data = null
             };
 
             var top10Movies = await _context.Movies
                 .Where(m => m.Ratings.Any())
                 .OrderByDescending(m => m.Ratings.Average(r => r.Rate) * Math.Log(m.Ratings.Count() + 1))
-                .Select(m => new
-                {
-                    averageRating = m.Ratings.Average(r => r.Rate),
-                    name = m.Name,
-                    avatar = m.Avatar,
-                    totalEpisode = m.Episodes.Count()
-                })
                 .Take(10)
+                .Select(m => new MovieTopRatingViewModel()
+                {
+                    Id = m.Id,
+                    AverageRating = m.Ratings.Average(r => r.Rate),
+                    Name = m.Name,
+                    Avatar = m.Avatar,
+                    TotalEpisode = m.Episodes.Count(),
+                    Description = m.Description,
+                    ClassName = $"hoverEffect{m.Id}"
+                })
                 .ToListAsync();
 
             result.Data = top10Movies;
             return result;
         }
+
+        public async Task<ApiResponse> MovieTopRatingExtendAsync()
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+
+            var top10Movies = await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Episodes)
+                .Where(m => m.Ratings.Any())
+                .OrderByDescending(m => m.Ratings.Average(r => r.Rate) * Math.Log(m.Ratings.Count() + 1))
+                .Take(10)
+                .Select(m => new MovieTopRatingExtendViewModel()
+                {
+                    TotalRate = m.Ratings.Sum(r => r.Rate),
+                    Name = m.Name,
+                    Background = m.Background,
+                    TotalEpisode = m.Episodes.Count(),
+                    Author = m.Author,
+                    CreatedAt = m.CreatedAt,
+                    Description = m.Description
+                })
+                .ToListAsync();
+
+            result.Data = top10Movies;
+            return result;
+        }
+
+
     }
 }

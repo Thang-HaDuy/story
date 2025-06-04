@@ -35,5 +35,15 @@ namespace App.Areas.Management.Controllers.Apis
         }
 
 
+
+        [HttpGet("MovieTopRatingExtend")]
+        public async Task<IActionResult> MovieTopRatingExtend()
+        {
+            var result = await _movieService.MovieTopRatingExtendAsync();
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+
     }
 }
