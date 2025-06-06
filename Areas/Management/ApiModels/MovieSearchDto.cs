@@ -15,6 +15,6 @@ namespace App.Areas.Management.Dtos
         public string? Avatar { get; set; }
         public int CountEpisodes { get; set; }
         public int? CountViews { get; set; }
-        public int? vote { get; set; }
+        public int? Vote { get; set; }
     }
 }

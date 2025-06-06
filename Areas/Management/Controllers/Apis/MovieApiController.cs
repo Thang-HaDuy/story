@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace App.Areas.Management.Controllers.Apis
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("Api/[controller]")]
     public class MovieApiController(IMovieService MovieService) : ControllerBase
     {
         private readonly IMovieService _movieService = MovieService;
@@ -36,14 +36,22 @@ namespace App.Areas.Management.Controllers.Apis
 
 
 
-        [HttpGet("MovieTopRatingExtend")]
-        public async Task<IActionResult> MovieTopRatingExtend()
+        [HttpGet("SlideAnimeTop")]
+        public async Task<IActionResult> SlideAnimeTop()
         {
-            var result = await _movieService.MovieTopRatingExtendAsync();
+            var result = await _movieService.SlideAnimeTopAsync();
 
             return result.Success ? Ok(result) : NotFound();
         }
 
 
+
+        [HttpGet("NewAnimeUpdate")]
+        public async Task<IActionResult> NewAnimeUpdate()
+        {
+            var result = await _movieService.NewAnimeUpdateAsync();
+
+            return result.Success ? Ok(result) : NotFound();
+        }
     }
 }

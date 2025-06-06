@@ -10,6 +10,8 @@ using App.Models;
 using Microsoft.EntityFrameworkCore;
 using X.PagedList;
 using App.Areas.Management.Models.ViewModels;
+using App.Areas.Management.ApiModels;
+using Humanizer;
 
 namespace App.Areas.Management.Services.MovieServices
 {
@@ -41,7 +43,7 @@ namespace App.Areas.Management.Services.MovieServices
                                         CountEpisodes = m.Episodes!.Count(),
                                         Avatar = m.Avatar,
                                         CountViews = m.Views!.Count(),
-                                        vote = m.Ratings!.Count(),
+                                        Vote = m.Ratings!.Count(),
                                     })
                                     .ToPagedListAsync(pageNumber, pageSize);
             }
@@ -102,7 +104,7 @@ namespace App.Areas.Management.Services.MovieServices
                     AverageRating = m.Ratings.Average(r => r.Rate),
                     Name = m.Name,
                     Avatar = m.Avatar,
-                    TotalEpisode = m.Episodes.Count(),
+                    Episode = m.Episodes.Count(),
                     Description = m.Description,
                     ClassName = $"hoverEffect{m.Id}"
                 })
@@ -112,7 +114,7 @@ namespace App.Areas.Management.Services.MovieServices
             return result;
         }
 
-        public async Task<ApiResponse> MovieTopRatingExtendAsync()
+        public async Task<ApiResponse> SlideAnimeTopAsync()
         {
             var result = new ApiResponse()
             {
@@ -130,13 +132,24 @@ namespace App.Areas.Management.Services.MovieServices
                 .Take(10)
                 .Select(m => new MovieTopRatingExtendViewModel()
                 {
-                    TotalRate = m.Ratings.Sum(r => r.Rate),
+                    Id = m.Id,
                     Name = m.Name,
                     Background = m.Background,
-                    TotalEpisode = m.Episodes.Count(),
                     Author = m.Author,
-                    CreatedAt = m.CreatedAt,
-                    Description = m.Description
+                    Description = m.Description,
+                    Categories = string.Join(", ", _context.CategoryMovie
+                                        .Include(m => m.Category)
+                                        .Where(c => c.MovieId == m.Id)
+                                        .Select(m => m.Category.Name)
+                                        .ToList()),
+
+                    Info = new InfoResponse
+                    (
+                        m.Ratings.Sum(r => r.Rate),
+                        m.CreatedAt.ToString(),
+                        "HD",
+                        m.Episodes.Count()
+                    )
                 })
                 .ToListAsync();
 
@@ -144,6 +157,47 @@ namespace App.Areas.Management.Services.MovieServices
             return result;
         }
 
+        public async Task<ApiResponse> NewAnimeUpdateAsync()
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            var top10Movies = await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Episodes)
+                .Where(m => m.Ratings.Any())
+                .OrderByDescending(m => m.Ratings.Average(r => r.Rate) * Math.Log(m.Ratings.Count() + 1))
+                .Take(10)
+                .Select(m => new MovieResponse(
+                    m.Avatar,
+                    _context.Views.Where(v => v.MovieId == m.Id).Count(),
+                    new ItemHoverResponse(
+                        m.Name,
+                        m.Description,
+                        m.Author,
+                        string.Join(", ",
+                         _context.CategoryMovie
+                            .Include(m => m.Category)
+                            .Where(c => c.MovieId == m.Id)
+                            .Select(m => m.Category.Name)
+                            .ToList()),
+                        "Đang cập nhật",
+                        new InfoResponse(
+                            m.Ratings.Sum(r => r.Rate),
+                            m.CreatedAt.ToString(),
+                            "HD",
+                            m.Episodes.Count()
+                        )
+                    )
+                ))
+                .ToListAsync();
 
+            result.Data = top10Movies;
+            return result;
+        }
     }
 }
