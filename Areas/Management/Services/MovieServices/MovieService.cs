@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using App.Areas.Management.Dtos;
 using App.Areas.Management.Models;
 using App.Data;
 using App.Models.ViewModels;
@@ -16,16 +15,14 @@ using Humanizer;
 namespace App.Areas.Management.Services.MovieServices
 {
     public class MovieService(
-        IConfiguration configuration,
         DataDbContext context
         ) : IMovieService
     {
         private readonly DataDbContext _context = context;
-        private readonly IConfiguration _configuration = configuration;
 
         public async Task<ApiResponse> SearchAsync(string query, string? type, int? page, int? pagelimit)
         {
-            IPagedList<MovieSearchDto> movies;
+            IPagedList<MovieSearchResponse> movies;
             if (type == "full")
             {
                 var pageNumber = page ?? 1;
@@ -35,16 +32,18 @@ namespace App.Areas.Management.Services.MovieServices
                                     .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
                                     .Include(m => m.Ratings)
-                                    .Include(m => m.Views)
-                                    .Select(m => new MovieSearchDto()
-                                    {
-                                        Id = m.Id,
-                                        Name = m.Name,
-                                        CountEpisodes = m.Episodes!.Count(),
-                                        Avatar = m.Avatar,
-                                        CountViews = m.Views!.Count(),
-                                        Vote = m.Ratings!.Count(),
-                                    })
+                                    .Select(m => new MovieSearchResponse(
+                                        m.Id,
+                                        m.Name,
+                                        m.Avatar,
+                                        m.Episodes!.Count(),
+                                        _context.Movies
+                                            .Where(mm => mm.Id == m.Id)
+                                            .SelectMany(mm => mm.Episodes)
+                                            .SelectMany(e => e.Views)
+                                            .Count(),
+                                            m.Ratings.Average(r => r.Rate)
+                                    ))
                                     .ToPagedListAsync(pageNumber, pageSize);
             }
             else
@@ -52,13 +51,14 @@ namespace App.Areas.Management.Services.MovieServices
                 movies = await _context.Movies
                                     .Where(m => m.Name!.Contains(query))
                                     .Include(m => m.Episodes)
-                                    .Select(m => new MovieSearchDto()
-                                    {
-                                        Id = m.Id,
-                                        Name = m.Name,
-                                        CountEpisodes = m.Episodes!.Count(),
-                                        Avatar = m.Avatar,
-                                    })
+                                    .Select(m => new MovieSearchResponse(
+                                        m.Id,
+                                        m.Name,
+                                        m.Avatar,
+                                        m.Episodes!.Count(),
+                                        0,
+                                        0
+                                    ))
                                     .ToPagedListAsync(1, 5);
             }
 
@@ -169,13 +169,65 @@ namespace App.Areas.Management.Services.MovieServices
             var top10Movies = await _context.Movies
                 .Include(m => m.Ratings)
                 .Include(m => m.Episodes)
-                .Where(m => m.Ratings.Any())
-                .OrderByDescending(m => m.Ratings.Average(r => r.Rate) * Math.Log(m.Ratings.Count() + 1))
+                .Where(m => m.Episodes.Any())
+                .Select(m => new
+                {
+                    Movie = m,
+                    LatestEpisodeCreatedAt = _context.Episodes
+                        .Where(e => e.MovieId == m.Id)
+                        .Max(e => (DateTime?)e.CreatedAt)
+                })
+                .OrderByDescending(x => x.LatestEpisodeCreatedAt)
+                .Take(10)
+                .Select(m => new MovieResponse(
+                    m.Movie.Avatar,
+                    _context.Views.Where(v => v.Episode.MovieId == m.Movie.Id).Count(),
+                    new ItemHoverResponse(
+                        m.Movie.Id,
+                        m.Movie.Name,
+                        m.Movie.Description,
+                        m.Movie.Author,
+                        string.Join(", ",
+                         _context.CategoryMovie
+                            .Include(c => c.Category)
+                            .Where(c => c.MovieId == m.Movie.Id)
+                            .Select(c => c.Category.Name)
+                            .ToList()),
+                        "Đang cập nhật",
+                        new InfoResponse(
+                            m.Movie.Ratings.Sum(r => r.Rate),
+                            m.Movie.CreatedAt.ToString(),
+                            "HD",
+                            m.Movie.Episodes.Count()
+                        )
+                    )
+                ))
+                .ToListAsync();
+
+            result.Data = top10Movies;
+            return result;
+        }
+
+        public async Task<ApiResponse> UpcommingAnimeAsync()
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            var top10Movies = await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Episodes)
+                .Where(m => m.Episodes.Count() == 0)
+                .OrderByDescending(m => m.CreatedAt)
                 .Take(10)
                 .Select(m => new MovieResponse(
                     m.Avatar,
-                    _context.Views.Where(v => v.MovieId == m.Id).Count(),
+                    _context.Views.Where(v => v.Episode.MovieId == m.Id).Count(),
                     new ItemHoverResponse(
+                        m.Id,
                         m.Name,
                         m.Description,
                         m.Author,
@@ -193,6 +245,115 @@ namespace App.Areas.Management.Services.MovieServices
                             m.Episodes.Count()
                         )
                     )
+                ))
+                .ToListAsync();
+
+            result.Data = top10Movies;
+            return result;
+        }
+
+        public async Task<ApiResponse> NominatedAnimeAsync(string filter)
+        {
+            DateTime startTime, endTime;
+            var now = DateTime.UtcNow; // Hoặc DateTime.Now nếu dùng giờ địa phương
+
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+
+
+            if (filter == "most_viewed_month")
+            {
+                // Lấy từ đầu tháng đến cuối tháng hiện tại
+                startTime = new DateTime(now.Year, now.Month, 1);
+                endTime = startTime.AddMonths(1).AddTicks(-1); // Cuối tháng
+            }
+            else if (filter == "most_viewed_week")
+            {
+                // Lấy từ thứ Hai đến Chủ Nhật của tuần hiện tại
+                var daysToMonday = ((int)now.DayOfWeek - (int)DayOfWeek.Monday + 7) % 7;
+                startTime = now.Date.AddDays(-daysToMonday); // Thứ Hai
+                endTime = startTime.AddDays(6).AddHours(23).AddMinutes(59); // Chủ Nhật
+            }
+            else // most_viewed_day
+            {
+                // Lấy trong ngày hiện tại
+                startTime = now.Date; // 00:00:00 của hôm nay
+                endTime = startTime.AddHours(23).AddMinutes(59); // 23:59:59 của hôm nay
+            }
+
+            var movies = await context.Movies
+                .Where(m => m.Episodes.Any())
+                .Select(m => new
+                {
+                    Movie = m,
+                    ViewCount = m.Episodes
+                        .SelectMany(e => e.Views)
+                        .Count(v => v.CreatedAt >= startTime && v.CreatedAt <= endTime)
+                })
+                .OrderByDescending(x => x.ViewCount)
+                .Take(10)
+                .Select(x => new MovieResponse(
+                    x.Movie.Avatar,
+                    _context.Views.Where(v => v.Episode.MovieId == x.Movie.Id).Count(),
+                    new ItemHoverResponse(
+                        x.Movie.Id,
+                        x.Movie.Name,
+                        x.Movie.Description,
+                        x.Movie.Author,
+                        string.Join(", ",
+                         _context.CategoryMovie
+                            .Include(m => m.Category)
+                            .Where(c => c.MovieId == x.Movie.Id)
+                            .Select(m => m.Category.Name)
+                            .ToList()),
+                        "Đang cập nhật",
+                        new InfoResponse(
+                            x.Movie.Ratings.Sum(r => r.Rate),
+                            x.Movie.CreatedAt.ToString(),
+                            "HD",
+                            x.Movie.Episodes.Count()
+                        )
+                    )
+                ))
+                .ToListAsync();
+
+
+            result.Data = movies;
+            return result;
+        }
+
+        public async Task<ApiResponse> MinimalAnimeUpdatesAsync()
+        {
+
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            var top10Movies = await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Episodes)
+                .Where(m => m.Episodes.Any())
+                .Select(m => new
+                {
+                    Movie = m,
+                    LatestEpisodeCreatedAt = _context.Episodes
+                        .Where(e => e.MovieId == m.Id)
+                        .Max(e => (DateTime?)e.CreatedAt)
+                })
+                .OrderByDescending(x => x.LatestEpisodeCreatedAt)
+                .Take(10)
+                .Select(m => new MinimalMovieResponse(
+                    m.Movie.Id,
+                    m.Movie.Name,
+                    m.Movie.Episodes.Count()
                 ))
                 .ToListAsync();
 

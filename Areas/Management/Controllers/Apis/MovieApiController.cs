@@ -53,5 +53,30 @@ namespace App.Areas.Management.Controllers.Apis
 
             return result.Success ? Ok(result) : NotFound();
         }
+
+        [HttpGet("MinimalNewAnimeUpdates")]
+        public async Task<IActionResult> MinimalAnimeUpdates()
+        {
+            var result = await _movieService.MinimalAnimeUpdatesAsync();
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+        [HttpGet("UpcommingAnime")]
+        public async Task<IActionResult> UpcommingAnime()
+        {
+            var result = await _movieService.UpcommingAnimeAsync();
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+
+
+        [HttpGet("NominatedAnime")]
+        public async Task<IActionResult> NominatedAnime(string filter)
+        {
+            var result = await _movieService.NominatedAnimeAsync(filter);
+
+            return result.Success ? Ok(result) : NotFound();
+        }
     }
 }

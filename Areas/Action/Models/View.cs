@@ -10,13 +10,15 @@ namespace App.Areas.Action.Models
 {
     public class View
     {
-        public string UserId { get; set; }
-        public string MovieId { get; set; }
+        public string Id { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
+        public string EpisodeId { get; set; } = string.Empty;
 
         [ForeignKey("UserId")]
         public AppUser User { get; set; }
 
-        [ForeignKey("MovieId")]
-        public Movie Movie { get; set; }
+        [ForeignKey("EpisodeId")]
+        public Episode Episode { get; set; }
+        public DateTime? CreatedAt { get; set; }
     }
 }

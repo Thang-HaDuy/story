@@ -12,5 +12,8 @@ namespace App.Areas.Management.Services.MovieServices
         public Task<ApiResponse> MovieTopRatingAsync();
         public Task<ApiResponse> SlideAnimeTopAsync();
         public Task<ApiResponse> NewAnimeUpdateAsync();
+        public Task<ApiResponse> UpcommingAnimeAsync();
+        public Task<ApiResponse> NominatedAnimeAsync(string filter);
+        public Task<ApiResponse> MinimalAnimeUpdatesAsync();
     }
 }

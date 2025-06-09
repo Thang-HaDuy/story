@@ -48,6 +48,5 @@ namespace App.Areas.Management.Models
         public ICollection<Episode> Episodes { get; set; } = [];
         public ICollection<Follow> Follows { get; set; } = [];
         public ICollection<Rating> Ratings { get; set; } = [];
-        public ICollection<View> Views { get; set; } = [];
     }
 }

@@ -44,10 +44,6 @@ namespace App.Data
                 entity.HasKey(c => new { c.UserId, c.MovieId });
             });
 
-            modelBuilder.Entity<View>(entity =>
-            {
-                entity.HasKey(c => new { c.UserId, c.MovieId });
-            });
         }
 
         public DbSet<Category> Categories { get; set; }

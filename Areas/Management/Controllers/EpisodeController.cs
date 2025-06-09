@@ -97,7 +97,7 @@ namespace App.Areas.Management.Controllers
             }
 
             var episode = await _context.Episodes.Include(e => e.Movie)
-                    .FirstOrDefaultAsync(m => m.Id == id); ;
+                    .FirstOrDefaultAsync(m => m.Id == id);
             if (episode == null)
             {
                 return NotFound();
