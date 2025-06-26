@@ -17,7 +17,6 @@ namespace App.Areas.Management.Models
 
         [Display(Name = "Mô Tả")]
         [Required(ErrorMessage = "Phải nhập {0}")]
-        [Column(TypeName = "text")]
         public string? Description { get; set; }
 
         [Display(Name = "Tác Giả")]

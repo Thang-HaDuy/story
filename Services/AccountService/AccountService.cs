@@ -60,7 +60,7 @@ namespace App.Services.AccountService
         }
 
 
-        public async Task<IdentityResult> RegisterAsync(RegisterModel model)
+        public async Task<IdentityResult> RegisterAsync(RegisterModel model, string domain)
         {
             var user = new AppUser
             {
@@ -68,8 +68,17 @@ namespace App.Services.AccountService
                 UserName = model.UserName,
                 CreatedAt = DateTime.UtcNow
             };
+            var result = await _userManager.CreateAsync(user, model.Password!);
 
-            return await _userManager.CreateAsync(user, model.Password!);
+            if (result.Succeeded)
+            {
+                var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
+                var passwordResetLink = $"{domain}/auth/confirm-email?email={Uri.EscapeDataString(model.Email!)}&token={Uri.EscapeDataString(code!)}";
+                var safeLink = HtmlEncoder.Default.Encode(passwordResetLink);
+                await _emailService.SendEmailAsync("ConfirmEmail.html", model.Email, "Confirm Email", new { name = user.UserName, link = safeLink });
+            }
+
+            return result;
         }
 
         public async Task<ApiResponse> ForgotPasswordAsync(string email, string domain)
@@ -224,6 +233,41 @@ namespace App.Services.AccountService
             }
 
             result.Message = "Cập nhật thành công.";
+            return result;
+        }
+
+        public async Task<ApiResponse> ConfirmEmailAsync(ConfirmEmailModel model)
+        {
+            var result = new ApiResponse
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+
+            if (model.Email == null || model.Code == null)
+            {
+                result.Message = "User not found.";
+                result.Success = false;
+                return result;
+            }
+
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+            if (user == null)
+            {
+                result.Message = "User not found.";
+                result.Success = false;
+                return result;
+            }
+            var res = await _userManager.ConfirmEmailAsync(user, model.Code!);
+
+            if (!res.Succeeded)
+            {
+                result.Success = false;
+                return result;
+            }
             return result;
         }
     }

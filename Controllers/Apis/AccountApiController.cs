@@ -17,10 +17,26 @@ namespace App.Controllers.Apis
         {
             if (ModelState.IsValid)
             {
-                var result = await _accountService.RegisterAsync(model);
+                var currentUrl = HttpContext.Request.Headers["X-Subdomain"].FirstOrDefault();
+                var result = await _accountService.RegisterAsync(model, currentUrl);
                 if (result.Succeeded)
                 {
                     return Ok(result.Succeeded);
+                }
+            }
+
+            return Unauthorized();
+        }
+
+        [HttpPost("ConfirmEmail")]
+        public async Task<IActionResult> ConfirmEmail(ConfirmEmailModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var result = await _accountService.ConfirmEmailAsync(model);
+                if (result.Success)
+                {
+                    return Ok(result.Success);
                 }
             }
 

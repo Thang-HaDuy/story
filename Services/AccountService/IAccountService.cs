@@ -6,7 +6,8 @@ namespace App.Services.AccountService
 {
     public interface IAccountService
     {
-        public Task<IdentityResult> RegisterAsync(RegisterModel model);
+        public Task<IdentityResult> RegisterAsync(RegisterModel model, string domain);
+        public Task<ApiResponse> ConfirmEmailAsync(ConfirmEmailModel model);
         public Task<ApiResponse> LoginAsync(LoginModel model);
         public Task<ApiResponse> ForgotPasswordAsync(string email, string domain);
         public Task<ApiResponse> ResetPasswordAsync(ResetPasswordViewModel model);
