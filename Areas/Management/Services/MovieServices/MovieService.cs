@@ -11,6 +11,7 @@ using X.PagedList;
 using App.Areas.Management.Models.ViewModels;
 using App.Areas.Management.ApiModels;
 using Humanizer;
+using Org.BouncyCastle.Crypto.Engines;
 
 namespace App.Areas.Management.Services.MovieServices
 {
@@ -94,7 +95,7 @@ namespace App.Areas.Management.Services.MovieServices
                 Data = null
             };
 
-            var top10Movies = await _context.Movies
+            var movie = await _context.Movies
                 .Where(m => m.Ratings.Any())
                 .OrderByDescending(m => m.Ratings.Average(r => r.Rate) * Math.Log(m.Ratings.Count() + 1))
                 .Take(10)
@@ -110,7 +111,7 @@ namespace App.Areas.Management.Services.MovieServices
                 })
                 .ToListAsync();
 
-            result.Data = top10Movies;
+            result.Data = movie;
             return result;
         }
 
@@ -124,7 +125,7 @@ namespace App.Areas.Management.Services.MovieServices
                 Data = null
             };
 
-            var top10Movies = await _context.Movies
+            var movie = await _context.Movies
                 .Include(m => m.Ratings)
                 .Include(m => m.Episodes)
                 .Where(m => m.Ratings.Any())
@@ -153,7 +154,7 @@ namespace App.Areas.Management.Services.MovieServices
                 })
                 .ToListAsync();
 
-            result.Data = top10Movies;
+            result.Data = movie;
             return result;
         }
 
@@ -166,7 +167,7 @@ namespace App.Areas.Management.Services.MovieServices
                 Success = true,
                 Data = null
             };
-            var top10Movies = await _context.Movies
+            var movie = await _context.Movies
                 .Include(m => m.Ratings)
                 .Include(m => m.Episodes)
                 .Where(m => m.Episodes.Any())
@@ -204,7 +205,7 @@ namespace App.Areas.Management.Services.MovieServices
                 ))
                 .ToListAsync();
 
-            result.Data = top10Movies;
+            result.Data = movie;
             return result;
         }
 
@@ -217,7 +218,7 @@ namespace App.Areas.Management.Services.MovieServices
                 Success = true,
                 Data = null
             };
-            var top10Movies = await _context.Movies
+            var movie = await _context.Movies
                 .Include(m => m.Ratings)
                 .Include(m => m.Episodes)
                 .Where(m => m.Episodes.Count() == 0)
@@ -248,7 +249,7 @@ namespace App.Areas.Management.Services.MovieServices
                 ))
                 .ToListAsync();
 
-            result.Data = top10Movies;
+            result.Data = movie;
             return result;
         }
 
@@ -337,7 +338,7 @@ namespace App.Areas.Management.Services.MovieServices
                 Success = true,
                 Data = null
             };
-            var top10Movies = await _context.Movies
+            var movie = await _context.Movies
                 .Include(m => m.Ratings)
                 .Include(m => m.Episodes)
                 .Where(m => m.Episodes.Any())
@@ -357,7 +358,163 @@ namespace App.Areas.Management.Services.MovieServices
                 ))
                 .ToListAsync();
 
-            result.Data = top10Movies;
+            result.Data = movie;
+            return result;
+        }
+
+        public async Task<ApiResponse> GetMovieBanerByIdAsync(string id)
+        {
+
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            var movie = await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Episodes)
+                .Where(m => m.Id == id)
+                .Select(m => new GetMovieBanerByIdResponse(
+                    m.Id,
+                    m.Name,
+                    m.Background,
+                    m.Avatar,
+                    m.Description,
+                    m.Episodes.Count(),
+                    m.CreatedAt.ToString(),
+                    _context.Views.Where(v => v.Episode.MovieId == m.Id).Count(),
+                    m.Ratings.Count(),
+                    m.Ratings.Average(r => r.Rate)
+
+                ))
+                .ToListAsync();
+
+            result.Data = movie;
+            return result;
+        }
+
+        public async Task<ApiResponse> GetMovieInfoByIdAsync(string id)
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            var movie = await _context.Movies
+                .Include(m => m.Ratings)
+                .Include(m => m.Episodes)
+                .Where(m => m.Id == id)
+                .Select(m => new GetMovieInfoByIdResponse(
+                    m.Id,
+                    string.Join(", ", _context.Episodes.Where(e => e.MovieId == m.Id).OrderByDescending(m => m.CreatedAt).Take(3).Select(e => e.Number)),
+                    m.Status,
+                    string.Join(", ", _context.CategoryMovie
+                            .Include(m => m.Category)
+                            .Where(c => c.MovieId == m.Id)
+                            .Select(m => m.Category.Name)
+                            .ToList()),
+                    m.Author,
+                    m.Episodes.Count(),
+                    "FHD",
+                    m.Ratings.Average(r => r.Rate),
+                    "VietSub"
+                ))
+                .ToListAsync();
+
+            result.Data = movie;
+            return result;
+        }
+
+
+        public async Task<ApiResponse> GetMovieSuggestAsync(string id)
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            // Lấy danh sách CategoryId của movieId
+            var categoryIds = await _context.CategoryMovie
+                .Where(cm => cm.MovieId == id)
+                .Select(cm => cm.CategoryId)
+                .ToListAsync();
+
+            // Tìm các Movie khác có ít nhất một CategoryId trùng khớp
+            var similarMovies = await _context.CategoryMovie
+                .Where(cm => categoryIds.Contains(cm.CategoryId) && cm.MovieId != id)
+                .Include(cm => cm.Movie)
+                .Select(cm => new GetMovieSuggestResponse
+                (
+                    cm.Movie.Id,
+                    cm.Movie.Name,
+                    cm.Movie.Avatar,
+                    _context.Ratings.Where(r => r.MovieId == cm.MovieId).Average(r => r.Rate),
+                    _context.Episodes.Where(e => e.MovieId == cm.MovieId).Count()
+                ))
+                .Distinct() // Loại bỏ trùng lặp
+                .Take(10)
+                .ToListAsync();
+
+            result.Data = similarMovies;
+            return result;
+        }
+
+
+        public async Task<ApiResponse> GetMovieInLibraryAsync(string filter)
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+
+            List<GetMovieInLibraryRespone> movies;
+
+            if (filter == "0-9")
+            {
+                movies = await _context.Movies
+                .Where(m => !string.IsNullOrEmpty(m.Name) && char.IsDigit(m.Name[0]))
+                .Select(m => new GetMovieInLibraryRespone(
+                    m.Id,
+                    m.Name,
+                    m.Avatar,
+                    m.CreatedAt.ToString(),
+                    string.Join(", ", _context.CategoryMovie
+                            .Include(m => m.Category)
+                            .Where(c => c.MovieId == m.Id)
+                            .Select(m => m.Category.Name)
+                            .ToList()),
+                    _context.Ratings.Where(r => r.MovieId == m.Id).Average(r => r.Rate)
+                ))
+                .ToListAsync();
+            }
+            else
+            {
+                movies = await _context.Movies
+                    .Where(m => !string.IsNullOrEmpty(m.Name) && m.Name.StartsWith(filter, StringComparison.OrdinalIgnoreCase))
+                    .Select(m => new GetMovieInLibraryRespone(
+                        m.Id,
+                        m.Name,
+                        m.Avatar,
+                        m.CreatedAt.ToString(),
+                        string.Join(", ", _context.CategoryMovie
+                                .Include(m => m.Category)
+                                .Where(c => c.MovieId == m.Id)
+                                .Select(m => m.Category.Name)
+                                .ToList()),
+                        _context.Ratings.Where(r => r.MovieId == m.Id).Average(r => r.Rate)
+                    ))
+                    .ToListAsync();
+            }
+            result.Data = movies;
             return result;
         }
     }

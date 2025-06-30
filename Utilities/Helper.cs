@@ -1,7 +1,4 @@
 using System.Diagnostics;
-using FFMpegCore;
-using FFMpegCore.Enums;
-using FFMpegCore.Pipes;
 
 namespace App.Utilities
 {

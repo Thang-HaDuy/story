@@ -70,11 +70,43 @@ namespace App.Areas.Management.Controllers.Apis
         }
 
 
-
         [HttpGet("NominatedAnime")]
         public async Task<IActionResult> NominatedAnime(string filter)
         {
             var result = await _movieService.NominatedAnimeAsync(filter);
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+
+        [HttpGet("MovieInLibrary")]
+        public async Task<IActionResult> MovieInLibrary(string filter)
+        {
+            var result = await _movieService.GetMovieInLibraryAsync(filter);
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+        [HttpGet("MovieBanerById")]
+        public async Task<IActionResult> MovieBanerById(string id)
+        {
+            var result = await _movieService.GetMovieBanerByIdAsync(id);
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+        [HttpGet("MovieInfoById")]
+        public async Task<IActionResult> MovieInfoById(string id)
+        {
+            var result = await _movieService.GetMovieInfoByIdAsync(id);
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+        [HttpGet("MovieSuggest")]
+        public async Task<IActionResult> MovieSuggest(string id)
+        {
+            var result = await _movieService.GetMovieSuggestAsync(id);
 
             return result.Success ? Ok(result) : NotFound();
         }
