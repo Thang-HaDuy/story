@@ -19,6 +19,8 @@ namespace App.Areas.Management.Models
         [Display(Name = "Video")]
         public string? FileName { get; set; }
 
+        public string? FileStreaming { get; set; }
+
         [NotMapped]
         [DataType(DataType.Upload)]
         // [FileExtensions(Extensions = "mp4")]

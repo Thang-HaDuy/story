@@ -6,27 +6,19 @@ using App.Utilities;
 
 namespace App.Services.AccountService
 {
-    public class AccountService : IAccountService
+    public class AccountService(
+        UserManager<AppUser> userManager,
+        IJwtService iJwtService,
+        IConfiguration config,
+        EmailService emailService
+        ) : IAccountService
     {
 
-        private readonly IConfiguration _config;
-        private readonly UserManager<AppUser> _userManager;
-        private readonly IJwtService _iJwtService;
-        private readonly EmailService _emailService;
+        private readonly IConfiguration _config = config;
+        private readonly UserManager<AppUser> _userManager = userManager;
+        private readonly IJwtService _iJwtService = iJwtService;
+        private readonly EmailService _emailService = emailService;
 
-        public AccountService
-        (
-            UserManager<AppUser> userManager,
-            IJwtService iJwtService,
-            IConfiguration config,
-            EmailService emailService
-        )
-        {
-            _userManager = userManager;
-            _iJwtService = iJwtService;
-            _config = config;
-            _emailService = emailService;
-        }
         public async Task<ApiResponse> LoginAsync(LoginModel model)
         {
             var user = await _userManager.FindByEmailAsync(model.Email!);

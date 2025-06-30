@@ -10,6 +10,7 @@ using App.Areas.Management.Models;
 using App.Data;
 using X.PagedList;
 using App.Utilities;
+using System.Diagnostics;
 
 namespace App.Areas.Management.Controllers
 {
@@ -75,7 +76,12 @@ namespace App.Areas.Management.Controllers
                 model.MovieId = id;
                 model.CreatedAt = DateTime.UtcNow;
                 model.UpdatedAt = DateTime.UtcNow;
-                if (model.FileUpload != null && model.FileUpload.Length > 0) model.FileName = await UploadImage.UploadImageAsync("Video", "Episode", model.FileUpload);
+                if (model.FileUpload != null && model.FileUpload.Length > 0)
+                {
+                    var uploadResult = await Helper.UploadVideo("Video", "Episode", model.FileUpload, _hostenvironment);
+                    model.FileName = uploadResult.OriginalFile;
+                    model.FileStreaming = uploadResult.FileStream;
+                }
 
 
                 _context.Add(model);
@@ -122,7 +128,12 @@ namespace App.Areas.Management.Controllers
 
             if (ModelState.IsValid)
             {
-                if (model.FileUpload != null && model.FileUpload.Length > 0) episode.FileName = await UploadImage.UploadImageAsync("Video", "episode", model.FileUpload);
+                if (model.FileUpload != null && model.FileUpload.Length > 0)
+                {
+                    var uploadResult = await Helper.UploadVideo("Video", "Episode", model.FileUpload, _hostenvironment);
+                    episode.FileName = uploadResult.OriginalFile;
+                    episode.FileStreaming = uploadResult.FileStream;
+                }
                 episode.Name = model.Name;
                 episode.Number = model.Number;
 
@@ -180,13 +191,14 @@ namespace App.Areas.Management.Controllers
         [HttpGet("{episodeId}")]
         public async Task<IActionResult> StreamVideo(string episodeId)
         {
+
             var video = await _context.Episodes.FirstOrDefaultAsync(v => v.Id == episodeId);
             if (video == null || string.IsNullOrEmpty(video.FileName))
                 return NotFound();
 
             // Xây dựng đường dẫn đầy đủ
             var path = Path.Combine(_hostenvironment.WebRootPath, video.FileName);
-
+            Console.WriteLine(">>>check path: " + path);
             // Kiểm tra file tồn tại
             if (!System.IO.File.Exists(path))
                 return NotFound();

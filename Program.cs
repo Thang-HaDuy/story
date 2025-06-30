@@ -8,11 +8,14 @@ using App.Models;
 using App.Services;
 using App.Services.AccountService;
 using App.Utilities;
+using FFMpegCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.StaticFiles;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -53,6 +56,12 @@ builder.Services.AddSwaggerGen(options =>
     });
 
     options.AddSecurityRequirement(new OpenApiSecurityRequirement { { scheme, Array.Empty<string>() } });
+});
+
+GlobalFFOptions.Configure(options =>
+{
+    options.BinaryFolder = "/usr/bin";
+    options.TemporaryFilesFolder = Path.Combine(builder.Environment.WebRootPath, "temp");
 });
 
 builder.Services.AddDbContext<DataDbContext>(option =>
@@ -110,7 +119,24 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
     });
 
+builder.Services.AddControllers();
 var app = builder.Build();
+
+app.UseWhen(context => context.Request.Path.StartsWithSegments("/Streaming"), appBuilder =>
+{
+    appBuilder.UseCors(MyAllowSpecificOrigins);
+
+    var provider = new FileExtensionContentTypeProvider();
+    provider.Mappings[".m3u8"] = "application/x-mpegURL";
+    provider.Mappings[".ts"] = "video/MP2T";
+
+    appBuilder.UseStaticFiles(new StaticFileOptions
+    {
+        ContentTypeProvider = provider,
+        FileProvider = new PhysicalFileProvider(Path.Combine(builder.Environment.WebRootPath, "Streaming")),
+        RequestPath = "/Streaming"
+    });
+});
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

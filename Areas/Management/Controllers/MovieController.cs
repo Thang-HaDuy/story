@@ -174,17 +174,17 @@ namespace App.Areas.Management.Controllers
                 _context.CategoryMovie.RemoveRange(listCategorys);
 
                 // //Add CategoryStory new
-                // if (!model.CategoryIDs.IsNullOrEmpty())
-                // {
-                //     foreach (var CateId in model.CategoryIDs)
-                //     {
-                //         _context.Add(new CategoryMovie()
-                //         {
-                //             CategoryId = CateId,
-                //             MovieId = id
-                //         });
-                //     }
-                // }
+                if (!model.CategoryIDs.IsNullOrEmpty())
+                {
+                    foreach (var CateId in model.CategoryIDs)
+                    {
+                        _context.Add(new CategoryMovie()
+                        {
+                            CategoryId = CateId,
+                            MovieId = id
+                        });
+                    }
+                }
 
                 if (model.FileAvatar != null && model.FileAvatar.Length > 0)
                     movie.Avatar = await UploadImage.UploadImageAsync("Image", "Movie", model.FileAvatar!);
