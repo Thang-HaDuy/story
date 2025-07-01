@@ -19,11 +19,7 @@ namespace App.Areas.Management.Controllers.Apis
         {
             var result = await _movieService.SearchAsync(query, type, page, pagesite);
 
-            if (result.Success != true) return NotFound();
-
-            if (result.Data == null) return NoContent();
-
-            return Ok(result.Data);
+            return result.Success ? Ok(result.Data) : NotFound();
         }
 
         [HttpGet("MovieTopRating")]
@@ -80,11 +76,11 @@ namespace App.Areas.Management.Controllers.Apis
 
 
         [HttpGet("MovieInLibrary")]
-        public async Task<IActionResult> MovieInLibrary(string filter)
+        public async Task<IActionResult> MovieInLibrary(string filter, int? page, int? pagesite)
         {
-            var result = await _movieService.GetMovieInLibraryAsync(filter);
+            var result = await _movieService.GetMovieInLibraryAsync(filter, page, pagesite);
 
-            return result.Success ? Ok(result) : NotFound();
+            return result.Success ? Ok(result.Data) : NotFound();
         }
 
         [HttpGet("MovieBanerById")]
@@ -107,6 +103,14 @@ namespace App.Areas.Management.Controllers.Apis
         public async Task<IActionResult> MovieSuggest(string id)
         {
             var result = await _movieService.GetMovieSuggestAsync(id);
+
+            return result.Success ? Ok(result) : NotFound();
+        }
+
+        [HttpGet("EpisodeList")]
+        public async Task<IActionResult> EpisodeList(string id)
+        {
+            var result = await _movieService.GetEpisodeListAsync(id);
 
             return result.Success ? Ok(result) : NotFound();
         }

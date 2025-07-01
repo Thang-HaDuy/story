@@ -24,7 +24,7 @@ namespace App.Areas.Management.Services.MovieServices
         public async Task<ApiResponse> SearchAsync(string query, string? type, int? page, int? pagelimit)
         {
             IPagedList<MovieSearchResponse> movies;
-            if (type == "full")
+            if (type == "extend")
             {
                 var pageNumber = page ?? 1;
                 var pageSize = pagelimit ?? 30;
@@ -64,23 +64,12 @@ namespace App.Areas.Management.Services.MovieServices
             }
 
 
-            if (movies == null || !movies.Any())
-            {
-                return new ApiResponse()
-                {
-                    Error = true,
-                    Message = "No data matching",
-                    Success = false,
-                    Data = null
-                };
-            }
-
             return new ApiResponse()
             {
                 Error = false,
                 Message = "Success",
                 Success = true,
-                Data = Paginated.RenderObject(movies)
+                Data = type == "extend" ? Paginated.RenderObject(movies) : movies
             };
         }
 
@@ -386,8 +375,8 @@ namespace App.Areas.Management.Services.MovieServices
                     m.CreatedAt.ToString(),
                     _context.Views.Where(v => v.Episode.MovieId == m.Id).Count(),
                     m.Ratings.Count(),
-                    m.Ratings.Average(r => r.Rate)
-
+                    m.Ratings.Average(r => r.Rate),
+                    string.Join(", ", _context.Episodes.Where(e => e.MovieId == m.Id).OrderBy(m => m.CreatedAt).Take(1).Select(e => e.Id).ToList())
                 ))
                 .ToListAsync();
 
@@ -410,7 +399,7 @@ namespace App.Areas.Management.Services.MovieServices
                 .Where(m => m.Id == id)
                 .Select(m => new GetMovieInfoByIdResponse(
                     m.Id,
-                    string.Join(", ", _context.Episodes.Where(e => e.MovieId == m.Id).OrderByDescending(m => m.CreatedAt).Take(3).Select(e => e.Number)),
+                    string.Join(", ", _context.Episodes.Where(e => e.MovieId == m.Id).OrderByDescending(m => m.CreatedAt).Take(3).Select(e => e.Number).ToList()),
                     m.Status,
                     string.Join(", ", _context.CategoryMovie
                             .Include(m => m.Category)
@@ -466,7 +455,7 @@ namespace App.Areas.Management.Services.MovieServices
         }
 
 
-        public async Task<ApiResponse> GetMovieInLibraryAsync(string filter)
+        public async Task<ApiResponse> GetMovieInLibraryAsync(string filter, int? page, int? pagesite)
         {
             var result = new ApiResponse()
             {
@@ -476,17 +465,21 @@ namespace App.Areas.Management.Services.MovieServices
                 Data = null
             };
 
-            List<GetMovieInLibraryRespone> movies;
+            IPagedList<GetMovieInLibraryRespone> movies;
+
+            var pageNumber = page ?? 1;
+            var pageSize = pagesite ?? 30;
 
             if (filter == "0-9")
             {
                 movies = await _context.Movies
-                .Where(m => !string.IsNullOrEmpty(m.Name) && char.IsDigit(m.Name[0]))
+                .Where(m => !string.IsNullOrEmpty(m.Name) && EF.Functions.Like(m.Name, "[0-9]%"))
                 .Select(m => new GetMovieInLibraryRespone(
                     m.Id,
                     m.Name,
                     m.Avatar,
                     m.CreatedAt.ToString(),
+                    m.Status,
                     string.Join(", ", _context.CategoryMovie
                             .Include(m => m.Category)
                             .Where(c => c.MovieId == m.Id)
@@ -494,17 +487,18 @@ namespace App.Areas.Management.Services.MovieServices
                             .ToList()),
                     _context.Ratings.Where(r => r.MovieId == m.Id).Average(r => r.Rate)
                 ))
-                .ToListAsync();
+                .ToPagedListAsync(pageNumber, pageSize);
             }
             else
             {
                 movies = await _context.Movies
-                    .Where(m => !string.IsNullOrEmpty(m.Name) && m.Name.StartsWith(filter, StringComparison.OrdinalIgnoreCase))
+                    .Where(m => !string.IsNullOrEmpty(m.Name) && m.Name.ToLower().StartsWith(filter))
                     .Select(m => new GetMovieInLibraryRespone(
                         m.Id,
                         m.Name,
                         m.Avatar,
                         m.CreatedAt.ToString(),
+                        m.Status,
                         string.Join(", ", _context.CategoryMovie
                                 .Include(m => m.Category)
                                 .Where(c => c.MovieId == m.Id)
@@ -512,9 +506,30 @@ namespace App.Areas.Management.Services.MovieServices
                                 .ToList()),
                         _context.Ratings.Where(r => r.MovieId == m.Id).Average(r => r.Rate)
                     ))
-                    .ToListAsync();
+                    .ToPagedListAsync(pageNumber, pageSize);
             }
-            result.Data = movies;
+            result.Data = Paginated.RenderObject(movies);
+            return result;
+        }
+        public async Task<ApiResponse> GetEpisodeListAsync(string id)
+        {
+            var result = new ApiResponse()
+            {
+                Error = false,
+                Message = "",
+                Success = true,
+                Data = null
+            };
+            var movie = await _context.Episodes
+                .Where(m => m.MovieId == id)
+                .OrderByDescending(m => m.CreatedAt)
+                .Select(m => new GetEpisodeListRespone(
+                    m.Id,
+                    m.Number
+                ))
+                .ToListAsync();
+
+            result.Data = movie;
             return result;
         }
     }

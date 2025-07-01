@@ -18,6 +18,7 @@ namespace App.Areas.Management.Services.MovieServices
         public Task<ApiResponse> GetMovieBanerByIdAsync(string id);
         public Task<ApiResponse> GetMovieInfoByIdAsync(string id);
         public Task<ApiResponse> GetMovieSuggestAsync(string id);
-        public Task<ApiResponse> GetMovieInLibraryAsync(string filter);
+        public Task<ApiResponse> GetMovieInLibraryAsync(string filter, int? page, int? pagesite);
+        public Task<ApiResponse> GetEpisodeListAsync(string id);
     }
 }
