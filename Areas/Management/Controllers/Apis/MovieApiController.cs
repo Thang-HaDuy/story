@@ -22,6 +22,15 @@ namespace App.Areas.Management.Controllers.Apis
             return result.Success ? Ok(result.Data) : NotFound();
         }
 
+
+        [HttpGet("MovieByCategory")]
+        public async Task<IActionResult> MovieByCategory(string query, int? page, int? pagesite)
+        {
+            var result = await _movieService.GetMovieByCategoryAsync(query, page, pagesite);
+
+            return result.Success ? Ok(result.Data) : NotFound();
+        }
+
         [HttpGet("MovieTopRating")]
         public async Task<IActionResult> MovieTopRating()
         {

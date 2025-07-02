@@ -549,5 +549,49 @@ namespace App.Areas.Management.Services.MovieServices
             result.Data = movie;
             return result;
         }
+
+
+        public async Task<ApiResponse> GetMovieByCategoryAsync(string name, int? page, int? pagelimit)
+        {
+            var pageNumber = page ?? 1;
+            var pageSize = pagelimit ?? 30;
+
+            var movies = await _context.CategoryMovie
+            .Include(cm => cm.Category)
+            .Include(cm => cm.Movie)
+            .Where(cm => cm.Category.Name.ToLower() == name.ToLower())
+            .Select(cm => new MovieResponse(
+                    cm.Movie.Avatar,
+                    _context.Views.Where(v => v.Episode.MovieId == cm.Movie.Id).Count(),
+                    new ItemHoverResponse(
+                        cm.Movie.Id,
+                        cm.Movie.Name,
+                        cm.Movie.Description,
+                        cm.Movie.Author,
+                        string.Join(", ",
+                        _context.CategoryMovie
+                            .Include(c => c.Category)
+                            .Where(c => c.MovieId == cm.Movie.Id)
+                            .Select(c => c.Category.Name)
+                            .ToList()),
+                        "Đang cập nhật",
+                        new InfoResponse(
+                            _context.Ratings.Where(r => r.MovieId == cm.Movie.Id).Sum(r => r.Rate),
+                            cm.Movie.CreatedAt.ToString(),
+                            "HD",
+                            _context.Episodes.Where(e => e.MovieId == cm.Movie.Id).Count()
+                        )
+                    )
+                ))
+                .ToPagedListAsync(pageNumber, pageSize);
+
+            return new ApiResponse()
+            {
+                Error = false,
+                Message = "Success",
+                Success = true,
+                Data = Paginated.RenderObject(movies)
+            };
+        }
     }
 }

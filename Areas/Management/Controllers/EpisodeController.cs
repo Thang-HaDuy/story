@@ -198,7 +198,6 @@ namespace App.Areas.Management.Controllers
 
             // Xây dựng đường dẫn đầy đủ
             var path = Path.Combine(_hostenvironment.WebRootPath, video.FileName);
-            Console.WriteLine(">>>check path: " + path);
             // Kiểm tra file tồn tại
             if (!System.IO.File.Exists(path))
                 return NotFound();
