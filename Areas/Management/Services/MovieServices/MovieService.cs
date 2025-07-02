@@ -23,54 +23,71 @@ namespace App.Areas.Management.Services.MovieServices
 
         public async Task<ApiResponse> SearchAsync(string query, string? type, int? page, int? pagelimit)
         {
-            IPagedList<MovieSearchResponse> movies;
+
             if (type == "extend")
             {
                 var pageNumber = page ?? 1;
                 var pageSize = pagelimit ?? 30;
 
-                movies = await _context.Movies
-                                    .Where(m => m.Name!.Contains(query))
-                                    .Include(m => m.Episodes)
-                                    .Include(m => m.Ratings)
-                                    .Select(m => new MovieSearchResponse(
-                                        m.Id,
-                                        m.Name,
-                                        m.Avatar,
-                                        m.Episodes!.Count(),
-                                        _context.Movies
-                                            .Where(mm => mm.Id == m.Id)
-                                            .SelectMany(mm => mm.Episodes)
-                                            .SelectMany(e => e.Views)
-                                            .Count(),
-                                            m.Ratings.Average(r => r.Rate)
-                                    ))
-                                    .ToPagedListAsync(pageNumber, pageSize);
+                var moviesExtend = await _context.Movies
+                    .Include(m => m.Ratings)
+                    .Include(m => m.Episodes)
+                    .Where(m => m.Name!.Contains(query))
+                    .Select(m => new MovieResponse(
+                        m.Avatar,
+                        _context.Views.Where(v => v.Episode.MovieId == m.Id).Count(),
+                        new ItemHoverResponse(
+                            m.Id,
+                            m.Name,
+                            m.Description,
+                            m.Author,
+                            string.Join(", ",
+                            _context.CategoryMovie
+                                .Include(c => c.Category)
+                                .Where(c => c.MovieId == m.Id)
+                                .Select(c => c.Category.Name)
+                                .ToList()),
+                            "Đang cập nhật",
+                            new InfoResponse(
+                                m.Ratings.Sum(r => r.Rate),
+                                m.CreatedAt.ToString(),
+                                "HD",
+                                m.Episodes.Count()
+                            )
+                        )
+                    ))
+                    .ToPagedListAsync(pageNumber, pageSize);
+
+
+                return new ApiResponse()
+                {
+                    Error = false,
+                    Message = "Success",
+                    Success = true,
+                    Data = Paginated.RenderObject(moviesExtend)
+                };
             }
             else
             {
-                movies = await _context.Movies
-                                    .Where(m => m.Name!.Contains(query))
-                                    .Include(m => m.Episodes)
-                                    .Select(m => new MovieSearchResponse(
-                                        m.Id,
-                                        m.Name,
-                                        m.Avatar,
-                                        m.Episodes!.Count(),
-                                        0,
-                                        0
-                                    ))
-                                    .ToPagedListAsync(1, 5);
+                var movies = await _context.Movies
+                    .Where(m => m.Name!.Contains(query))
+                    .Include(m => m.Episodes)
+                    .Select(m => new MovieSearchResponse(
+                        m.Id,
+                        m.Name,
+                        m.Avatar,
+                        m.Episodes!.Count()
+                    ))
+                    .ToPagedListAsync(1, 5);
+                return new ApiResponse()
+                {
+                    Error = false,
+                    Message = "Success",
+                    Success = true,
+                    Data = movies
+                };
             }
 
-
-            return new ApiResponse()
-            {
-                Error = false,
-                Message = "Success",
-                Success = true,
-                Data = type == "extend" ? Paginated.RenderObject(movies) : movies
-            };
         }
 
 
